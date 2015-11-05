@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:paddingRight="12dp"
+    android:paddingLeft="12dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:clickable="false">
+
+    <android.support.v7.widget.CardView
+        android:layout_margin="1dp"
+        android:duplicateParentState="true"
+        android:id="@+id/home_cv"
+        android:clickable="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/card_rl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/ripple"
+            android:clickable="true"
+            android:paddingBottom="16dp"
+            android:paddingTop="16dp">
+
+            <LinearLayout
+                android:clickable="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:clickable="false"
+                    android:layout_weight="1"
+                    android:id="@+id/home_rv_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/abc_ratingbar_full_material" />
+
+                <LinearLayout
+
+                    android:clickable="false"
+                    android:layout_weight="6"
+                    android:gravity="left"
+                    android:id="@+id/texts_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:clickable="false"
+                        android:id="@+id/heading"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:text="Explore"
+                        android:textColor="@color/primaryTextColor"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:clickable="false"
+                        android:id="@+id/subhead"
+                        android:layout_width="match_parent"
+                        android:layout_height="36dp"
+                        android:text="Explore and discover awesome street food aroudn you."
+                        android:textColor="@color/secondaryTextColor" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:clickable="false"
+                    android:layout_weight="1"
+                    android:id="@+id/right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/ic_chevron_right_black_24dp" />
+            </LinearLayout>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+    <!--<lay-->
+</LinearLayout>

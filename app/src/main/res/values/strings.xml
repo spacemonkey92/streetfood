@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">Street Baba</string>
+    <string name="hello_world">Hello world!</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_main">Street Baba </string>
+
+    <!--Home page -->
+    <string name="share">Share</string>
+    <string name="share_sub">Are you a Street Food lover? Share your favourite Street food with us.</string>
+    <string name="leader">Leaders</string>
+    <string name="leader_sub">Look who is the leading Street foodie.</string>
+    <string name="profile">Profile</string>
+    <string name="profile_sub">Your Profile, Settings and Everything else.</string>
+
+    <!--Application-->
+
+    <string name="title_activity_add_cart">AddCartActivity</string>
+    <string name="login_quote">"Life is too short to create a new Account"</string>
+
+    <!-- Add cart-->
+    <string name="camera">CAMERA</string>
+    <string name="gallery">GALLERY</string>
+    <string name="cart_name">Name</string>
+    <string name="cart_name_hint">Name The Food Spot You Discovered</string>
+    <string name="cart_location">Location</string>
+    <string name="cart_description">Description</string>
+    <string name="cart_description_hint">Tell the world whats awesome about your food discovery, what to eat and what not to. A brief description of the location. </string>
+    <string name="cart_post">POST</string>
+
+    <!-- Applications keys-->
+    <string name="facebook_app_id">1673631232923744</string>
+
+    <string name="parse_app_id">MQxMhubfYHuwgEV6iFaj9QBZSyfqXtJOYTVEGGdO</string>
+    <string name="parse_client_key">NUt0sTfMVCv07WwZhUbmchbg9u3MwUtuKebkJ2Z3</string>
+
+    <string name="google_places_API_key">AIzaSyAhjZ4CfJjhO-9KH6LvD22Io2ieeGtBrWU</string>
+
+
+
+
+</resources>
