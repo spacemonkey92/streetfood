@@ -29,12 +29,12 @@
     <string name="cart_post">POST</string>
 
     <!-- Applications keys-->
-    <string name="facebook_app_id">1673631232923744</string>
+    <string name="facebook_app_id">xx</string>
 
-    <string name="parse_app_id">MQxMhubfYHuwgEV6iFaj9QBZSyfqXtJOYTVEGGdO</string>
-    <string name="parse_client_key">NUt0sTfMVCv07WwZhUbmchbg9u3MwUtuKebkJ2Z3</string>
+    <string name="parse_app_id">xx</string>
+    <string name="parse_client_key">xx</string>
 
-    <string name="google_places_API_key">AIzaSyAhjZ4CfJjhO-9KH6LvD22Io2ieeGtBrWU</string>
+    <string name="google_places_API_key">x-xx</string>
 
 
 
