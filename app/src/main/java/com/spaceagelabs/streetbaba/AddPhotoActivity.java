@@ -37,7 +37,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.spaceagelabs.streetbaba.UI.adapters.PlaceAutocompleteAdapter;
 
 
-public class AddPhotoActivity extends AppCompatActivity implements  GoogleApiClient.OnConnectionFailedListener {
+public class AddPhotoActivity extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA = 101;
     private static final int SELECT_FILE = 102;
@@ -45,43 +45,14 @@ public class AddPhotoActivity extends AppCompatActivity implements  GoogleApiCli
     private static final String TAG = "AddCartActivity";
     private SlidingUpPanelLayout mLayout;
 
-    private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
-            new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
-
-
-    protected GoogleApiClient mGoogleApiClient;
-    private PlaceAutocompleteAdapter mAdapter;
-    private AutoCompleteTextView mAutocompleteView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_cart);
-
-        setupBottomSheet();
-        mAutocompleteView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, 0 /* clientId */, this)
-                .addApi(Places.GEO_DATA_API)
-                .build();
-
-
-        // Register a listener that receives callbacks when a suggestion has been selected
-        mAutocompleteView.setOnItemClickListener(mAutocompleteClickListener);
-
-        // Retrieve the TextViews that will display details and attributions of the selected place.
-
-        // Set up the adapter that will retrieve suggestions from the Places Geo Data API that cover
-        // the entire world.
-        mAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, BOUNDS_GREATER_SYDNEY,
-                null);
-        mAutocompleteView.setAdapter(mAdapter);
+        setContentView(R.layout.activity_add_photo);
         selectImage();
-
         // Set up the 'clear text' button that clears the text in the autocomplete view
-
-
     }
 
     @Override
@@ -106,72 +77,7 @@ public class AddPhotoActivity extends AppCompatActivity implements  GoogleApiCli
         return super.onOptionsItemSelected(item);
     }
 
-    public void setupBottomSheet(){
-        mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-        mLayout.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
-            @Override
-            public void onPanelSlide(View panel, float slideOffset) {
-                Log.i(TAG, "onPanelSlide, offset " + slideOffset);
-            }
 
-            @Override
-            public void onPanelExpanded(View panel) {
-                Log.i(TAG, "onPanelExpanded");
-
-            }
-
-            @Override
-            public void onPanelCollapsed(View panel) {
-                Log.i(TAG, "onPanelCollapsed");
-
-            }
-
-            @Override
-            public void onPanelAnchored(View panel) {
-                Log.i(TAG, "onPanelAnchored");
-            }
-
-            @Override
-            public void onPanelHidden(View panel) {
-                Log.i(TAG, "onPanelHidden");
-            }
-        });
-        mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-
-
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        if (mLayout != null &&
-                (mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED || mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED)) {
-            mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-        } else {
-            finish();
-        }
-
-
-    }
-
-    /**
-     * Called when the Activity could not connect to Google Play services and the auto manager
-     * could resolve the error automatically.
-     * In this case the API is not available and notify the user.
-     *
-     * @param connectionResult can be inspected to determine the cause of the failure
-     */
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-        Log.e(TAG, "onConnectionFailed: ConnectionResult.getErrorCode() = "
-                + connectionResult.getErrorCode());
-
-        // TODO(Developer): Check error code and notify the user of error state and resolution.
-        Toast.makeText(this,
-                "Could not connect to Google API Client: Error " + connectionResult.getErrorCode(),
-                Toast.LENGTH_SHORT).show();
-    }
     Uri imageUri;
     public void selectImage(){
 
@@ -201,8 +107,6 @@ public class AddPhotoActivity extends AppCompatActivity implements  GoogleApiCli
                 startActivityForResult(
                         Intent.createChooser(intent, "Select Image"),
                         SELECT_FILE);
-
-
             }
         });
     }
@@ -212,37 +116,18 @@ public class AddPhotoActivity extends AppCompatActivity implements  GoogleApiCli
         super.onActivityResult(requestCode, resultCode, data);
         ImageView image = (ImageView) findViewById(R.id.selected_image);
         if (resultCode == RESULT_OK) {
+            Bitmap bm;
             if (requestCode == REQUEST_CAMERA) {
-
                 try {
-                   Bitmap thumbnail = MediaStore.Images.Media.getBitmap(
-                            getContentResolver(), imageUri);
-                    image.setImageBitmap(thumbnail);
+                   bm = MediaStore.Images.Media.getBitmap(
+                           getContentResolver(), imageUri);
+                    image.setImageBitmap(bm);
                    String imageurl = getRealPathFromURI(imageUri);
+                    Log.d(TAG,"image url"+imageurl);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-
-//                Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-//                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-//                image.setImageBitmap(thumbnail);
-//                //thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-//                File destination = new File(Environment.getExternalStorageDirectory(),
-//                        System.currentTimeMillis() + ".jpg");
-//                FileOutputStream fo;
-//                try {
-//                    destination.createNewFile();
-//                    fo = new FileOutputStream(destination);
-//                    fo.write(bytes.toByteArray());
-//                    fo.close();
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-
             }
             else if (requestCode == SELECT_FILE) {
                 Uri selectedImageUri = data.getData();
@@ -252,7 +137,7 @@ public class AddPhotoActivity extends AppCompatActivity implements  GoogleApiCli
                 int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
                 cursor.moveToFirst();
                 String selectedImagePath = cursor.getString(column_index);
-                Bitmap bm;
+
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inJustDecodeBounds = true;
                 BitmapFactory.decodeFile(selectedImagePath, options);
@@ -266,93 +151,8 @@ public class AddPhotoActivity extends AppCompatActivity implements  GoogleApiCli
                 bm = BitmapFactory.decodeFile(selectedImagePath, options);
                 image.setImageBitmap(bm);
             }
-            ViewSwitcher viewSwitcher = (ViewSwitcher) findViewById(R.id.viewswitcher);
-            viewSwitcher.showNext();
-
         }
     }
-
-    /**
-     * Listener that handles selections from suggestions from the AutoCompleteTextView that
-     * displays Place suggestions.
-     * Gets the place id of the selected item and issues a request to the Places Geo Data API
-     * to retrieve more details about the place.
-     *
-     * @see com.google.android.gms.location.places.GeoDataApi#getPlaceById(GoogleApiClient,
-     * String...)
-     */
-    private AdapterView.OnItemClickListener mAutocompleteClickListener
-            = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            /*
-             Retrieve the place ID of the selected item from the Adapter.
-             The adapter stores each Place suggestion in a AutocompletePrediction from which we
-             read the place ID and title.
-              */
-            final AutocompletePrediction item = mAdapter.getItem(position);
-
-            final String placeId = item.getPlaceId();
-            final CharSequence primaryText = item.getPrimaryText(null);
-
-            Log.i(TAG, "Autocomplete item selected: " + primaryText);
-
-            /*
-             Issue a request to the Places Geo Data API to retrieve a Place object with additional
-             details about the place.
-              */
-            PendingResult<PlaceBuffer> placeResult = Places.GeoDataApi
-                    .getPlaceById(mGoogleApiClient, placeId);
-            placeResult.setResultCallback(mUpdatePlaceDetailsCallback);
-
-
-            Toast.makeText(getApplicationContext(), "Clicked: " + primaryText,
-                    Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "Called getPlaceById to get Place details for " + placeId);
-        }
-    };
-
-    /**
-     * Callback for results from a Places Geo Data API query that shows the first place result in
-     * the details view on screen.
-     */
-    private ResultCallback<PlaceBuffer> mUpdatePlaceDetailsCallback
-            = new ResultCallback<PlaceBuffer>() {
-        @Override
-        public void onResult(PlaceBuffer places) {
-            if (!places.getStatus().isSuccess()) {
-                // Request did not complete successfully
-                Log.e(TAG, "Place query did not complete. Error: " + places.getStatus().toString());
-                places.release();
-                return;
-            }
-            // Get the Place object from the buffer.
-            final Place place = places.get(0);
-
-            // Format details of the place for display and show it in a TextView.
-//            mPlaceDetailsText.setText(formatPlaceDetails(getResources(), place.getName(),
-//                    place.getId(), place.getAddress(), place.getPhoneNumber(),
-//                    place.getWebsiteUri()));
-
-            // Display the third party attributions if set.
-            final CharSequence thirdPartyAttribution = places.getAttributions();
-            if (thirdPartyAttribution == null) {
-//                mPlaceDetailsAttribution.setVisibility(View.GONE);
-            } else {
-//                mPlaceDetailsAttribution.setText(Html.fromHtml(thirdPartyAttribution.toString()));
-//                mPlaceDetailsAttribution.setVisibility(View.VISIBLE);
-            }
-
-            Log.i(TAG,"lat long"+place.getLatLng().toString());
-            Log.i(TAG, "Place details received: " + place.getName());
-            mAutocompleteView.setText(place.getName());
-            mAutocompleteView.dismissDropDown();
-            mAutocompleteView.setEnabled(false);
-
-            proceedForm();
-            places.release();
-        }
-    };
 
     public String getRealPathFromURI(Uri contentUri) {
         String[] proj = { MediaStore.Images.Media.DATA };
@@ -361,26 +161,6 @@ public class AddPhotoActivity extends AppCompatActivity implements  GoogleApiCli
                 .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         return cursor.getString(column_index);
-    }
-
-    public void proceedForm(){
-       // mAutocompleteView.setVisibility(View.VISIBLE);
-        EditText nameEt = (EditText) findViewById(R.id.name_et);
-        nameEt.setVisibility(View.VISIBLE);
-
-        TextView nameTv = (TextView) findViewById(R.id.name_title);
-        nameTv.setVisibility(View.VISIBLE);
-
-        EditText desEt = (EditText) findViewById(R.id.description_et);
-        desEt.setVisibility(View.VISIBLE);
-
-        TextView desTv = (TextView) findViewById(R.id.description_title);
-        desTv.setVisibility(View.VISIBLE);
-
-
-
-
-
     }
 
 

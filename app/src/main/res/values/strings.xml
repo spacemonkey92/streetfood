@@ -29,12 +29,10 @@
     <string name="cart_post">POST</string>
 
     <!-- Applications keys-->
-    <string name="facebook_app_id">xx</string>
 
-    <string name="parse_app_id">xx</string>
-    <string name="parse_client_key">xx</string>
-
-    <string name="google_places_API_key">x-xx</string>
+    <string name="parse_app_id">add your id here </string>
+     <string name="parse_client_key">add your id here </string>
+      <string name="google_places_API_key">add your id here </string>
 
 
 

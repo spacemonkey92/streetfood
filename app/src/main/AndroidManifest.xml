@@ -38,6 +38,10 @@
             android:name=".AddCartActivity"
             android:label="@string/title_activity_add_cart" >
         </activity>
+        <activity
+            android:name=".AddPhotoActivity"
+            android:label="@string/title_activity_add_cart" >
+        </activity>
     </application>
 
 </manifest>

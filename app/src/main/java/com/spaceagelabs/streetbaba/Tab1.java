@@ -309,7 +309,7 @@ public class Tab1 extends Fragment implements HomeRVAdapter.RVClickListener {
     }
 
     public void proceedToAdd(){
-        Intent intent = new Intent(getActivity(),AddCartActivity.class);
+        Intent intent = new Intent(getActivity(),AddPhotoActivity.class);
         startActivity(intent);
     }
 
