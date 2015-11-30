@@ -7,16 +7,31 @@
     <dimen name="xxs_margin">5dp</dimen>
     <dimen name="xs_margin">8dp</dimen>
     <dimen name="s_margin">12dp</dimen>
-    <dimen name="m_margin">18dp</dimen>
+    <dimen name="m_margin">16dp</dimen>
     <dimen name="l_margin">36dp</dimen>
     <dimen name="xl_margin">48dp</dimen>
     <dimen name="xxl_margin">88dp</dimen>
 
+    <!-- padding-->
+    <dimen name="s_padding">2dp</dimen>
+    <dimen name="m_padding">3dp</dimen>
+    <dimen name="l_padding">5dp</dimen>
+    <dimen name="xl_padding">8dp</dimen>
+
+    <!-- button-->
+    <dimen name="button_height">36dp</dimen>
+    <dimen name="button_width">88dp</dimen>
 
 
 
     <!-- picture-->
-    <dimen name="pic_height">100dp</dimen>
-    <dimen name="pic_width">100dp</dimen>
+    <dimen name="pic_height">90dp</dimen>
+    <dimen name="pic_width">90dp</dimen>
+
+    <!-- icon-->
+    <dimen name="icon_height">30dp</dimen>
+    <dimen name="icon_width">30dp</dimen>
+
+
 
 </resources>

@@ -15,11 +15,13 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.melnykov.fab.FloatingActionButton;
 import com.melnykov.fab.ScrollDirectionListener;
 import com.parse.FunctionCallback;
+import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.spaceagelabs.streetbaba.UI.DividerItemDecoration;
 import com.spaceagelabs.streetbaba.UI.adapters.CartsAdapter;
 import com.spaceagelabs.streetbaba.UI.viewmodel.CartsViewModel;
 import com.spaceagelabs.streetbaba.model.Cart;
+import com.spaceagelabs.streetbaba.util.GPSTracker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +36,7 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
     private CartsAdapter mRVAdapter;
     private View mView;
     private final static String TAG ="ViewCartsTab";
+    GPSTracker gpsTracker;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
 //        mRecycler.setAdapter(mRVAdapter);
 //        mRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecycler =(RecyclerView) mView.findViewById(R.id.carts_recycle_view);
+
         final FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.fab);
         fab.attachToRecyclerView(mRecycler, new ScrollDirectionListener() {
             @Override
@@ -70,8 +74,25 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", "1");
         params.put("range",1);
-        params.put("lat",40);
-        params.put("long",-30);
+        gpsTracker = new GPSTracker(getContext());
+        if (gpsTracker.getIsGPSTrackingEnabled())
+        {
+            Log.d(TAG,"started tracking...");
+            gpsTracker.getLocation();
+//            String lat =  String.valueOf(gpsTracker.getLatitude());
+//            String lng=  String.valueOf(gpsTracker.getLongitude());
+//            Log.d(TAG,"lat long is :"+lat+lng);
+            params.put("lat",gpsTracker.getLatitude());
+            params.put("long",gpsTracker.getLongitude());
+            gpsTracker.stopUsingGPS();
+            gpsTracker=null;
+
+        }else{
+         //TODO.
+            // dialog to turn on GPS owner.
+            Log.d(TAG,"gps fail");
+        }
+
 
         final List<CartsViewModel> allCarts = new ArrayList<>();
 

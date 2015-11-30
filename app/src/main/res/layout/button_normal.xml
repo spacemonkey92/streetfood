@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:background="@drawable/ripple"
+        android:id="@+id/normal_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        card_view:cardBackgroundColor="@color/primaryColor"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardElevation="2dp">
+        <RelativeLayout
+            android:gravity="center"
+            android:background="@drawable/primary_ripple"
+            android:clickable="true"
+            android:minWidth="@dimen/button_width"
+            android:minHeight="@dimen/button_height"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_gravity="center"
+                android:id="@+id/button_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:paddingLeft="@dimen/m_margin"
+                android:paddingRight="@dimen/m_margin"
+                android:text="POST"
+                android:textColor="@color/tabsScrollColor" />
+
+        </RelativeLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

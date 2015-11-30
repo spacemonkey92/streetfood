@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/textColor">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/dividerColor" />
+    
+    <LinearLayout
+        android:layout_marginLeft="@dimen/xxs_margin"
+        android:layout_marginRight="@dimen/xxs_margin"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content">
+        
+        <ImageView
+            android:id="@+id/loc_icon"
+            android:layout_width="@dimen/icon_width"
+            android:layout_height="@dimen/icon_height"
+            android:src="@mipmap/ic_place_black_24dp"
+            android:layout_gravity="center"
+            />
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/cart_location"
+            android:id="@+id/textView" />
+
+        <AutoCompleteTextView
+            android:gravity="right"
+            android:layout_weight="3"
+            android:layout_width="0dp"
+            android:layout_gravity="center"
+            android:id="@+id/autoCompleteTextView"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/textColor"
+            android:inputType="textNoSuggestions">
+        </AutoCompleteTextView>
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/dividerColor" />
+
+    <LinearLayout
+        android:layout_marginLeft="@dimen/xxs_margin"
+        android:layout_marginRight="@dimen/xxs_margin"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/ic_name"
+            android:layout_width="@dimen/icon_width"
+            android:layout_height="@dimen/icon_height"
+            android:src="@mipmap/ic_name_hat"
+            android:layout_gravity="center"
+            />
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/cart_name"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/loc_icon"
+            android:layout_toEndOf="@+id/loc_icon" />
+
+        <android.support.v7.widget.AppCompatEditText
+            android:gravity="right"
+            android:layout_weight="5"
+            android:layout_width="0dp"
+            android:layout_gravity="center"
+            android:id="@+id/cart_name_ET"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/textColor"
+            android:inputType="textNoSuggestions">
+        </android.support.v7.widget.AppCompatEditText>
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/dividerColor" />
+
+    <LinearLayout
+        android:layout_marginLeft="@dimen/xxs_margin"
+        android:layout_marginRight="@dimen/xxs_margin"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="@dimen/icon_width"
+            android:layout_height="@dimen/icon_height"
+            android:src="@mipmap/ic_subject_black_24dp"
+            android:layout_gravity="center"
+            />
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/cart_description"
+            />
+
+        <android.support.v7.widget.AppCompatEditText
+            android:gravity="right"
+            android:layout_weight="5"
+            android:layout_width="0dp"
+            android:layout_gravity="center"
+            android:id="@+id/cart_des_ET"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/textColor"
+            android:inputType="textNoSuggestions">
+        </android.support.v7.widget.AppCompatEditText>
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/dividerColor" />
+
+</LinearLayout>

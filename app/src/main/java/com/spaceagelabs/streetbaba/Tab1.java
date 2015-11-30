@@ -104,14 +104,13 @@ public class Tab1 extends Fragment implements HomeRVAdapter.RVClickListener {
     public void itemClick(View view, int position) {
 
         if(position==0){
-            if(true){
-//            if(isUserLoggedIn()){
+//            if(true){
+            if(isUserLoggedIn()){
                 proceedToAdd();
             }else{
                 mLayout.setAnchorPoint(0.5f);
                 mLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
             }
-
         }
     }
 

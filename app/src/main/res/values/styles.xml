@@ -10,7 +10,7 @@
         <item name="colorPrimaryDark">@color/darkPrimaryColor</item>
         <item name="android:colorPressedHighlight">@color/lightPrimaryColor</item>
         <item name="android:icon">@color/textColor</item>
-        <item name="colorAccent">@color/accentColor</item>
+        <item name="colorAccent">@color/primaryColor</item>
         <item name="android:textColor">@color/primaryTextColor</item>
         <item name="android:textColorTertiary">@color/secondaryTextColor</item>
         <item name="android:divider">@color/dividerColor</item>
@@ -27,6 +27,16 @@
         <item name="android:minHeight">36dp</item>
         <item name="android:layout_margin">3dp</item>
         <item name="android:background">@color/accentColor</item>
+    </style>
+
+    <style name="TextLabel" parent="TextAppearance.AppCompat">
+        //hint color And Label Color in False State
+        <item name="android:textColorHint">@color/dividerColor</item>
+        <item name="android:textSize">20sp</item>
+        //Label color in True State And Bar Color False And True State
+        <item name="colorAccent">@color/primaryColor</item>
+        <item name="colorControlNormal">@color/primaryColor</item>
+        <item name="colorControlActivated">@color/primaryColor</item>
     </style>
 
 </resources>

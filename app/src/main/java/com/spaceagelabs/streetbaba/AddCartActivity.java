@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -21,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -38,14 +40,20 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.AutocompletePrediction;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlaceBuffer;
+import com.google.android.gms.location.places.PlaceDetectionApi;
+import com.google.android.gms.location.places.PlaceFilter;
+import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
+import com.google.android.gms.location.places.PlaceReport;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.spaceagelabs.streetbaba.UI.adapters.PlaceAutocompleteAdapter;
+import com.spaceagelabs.streetbaba.util.ApplicationConstants;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -64,12 +72,13 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
     private static final String TAG = "AddCartActivity";
     private SlidingUpPanelLayout mLayout;
 
-    private static final LatLngBounds BOUNDS_GREATER_SYDNEY = new LatLngBounds(
-            new LatLng(-34.041458, 150.790100), new LatLng(-33.682247, 151.383362));
+    private static final LatLngBounds BOUNDS = new LatLngBounds(
+            new LatLng(1.3, 103.833333), new LatLng(1.3, 103.833333));
 
     protected GoogleApiClient mGoogleApiClient;
     private PlaceAutocompleteAdapter mAdapter;
     private AutoCompleteTextView mAutocompleteView;
+    Float Latitude =null, Longitude=null;
 
 
     @Override
@@ -79,50 +88,31 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
 
         setupBottomSheet();
         mAutocompleteView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, 0 /* clientId */, this)
-                .addApi(Places.GEO_DATA_API)
-                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this).enableAutoManage(this, 0 /* clientId */, this).addApi(Places.GEO_DATA_API).build();
 
-
-        // Register a listener that receives callbacks when a suggestion has been selected
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        // Register a listener that receives callbacks when a suggest ion has been selected
         mAutocompleteView.setOnItemClickListener(mAutocompleteClickListener);
-
-        // Retrieve the TextViews that will display details and attributions of the selected place.
-
-        // Set up the adapter that will retrieve suggestions from the Places Geo Data API that cover
-        // the entire world.
-        mAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, BOUNDS_GREATER_SYDNEY,
+        LatLngBounds bounds;
+        Float Latitude =  Float.parseFloat(getIntent().getExtras().getString(ApplicationConstants.CAM_LAT));
+        Float Longitude= Float.parseFloat(getIntent().getExtras().getString(ApplicationConstants.CAM_LONG));
+        if (Latitude!=null && Longitude !=null ){
+            Log.d(TAG,"got lat long" +String.valueOf(Latitude)+String.valueOf(Longitude));
+            bounds = new LatLngBounds(
+                    new LatLng(Latitude, Longitude), new LatLng(Latitude, Longitude));
+        }else{
+            Log.d(TAG,"using default lat long");
+            bounds = new LatLngBounds(
+                    new LatLng(1.3, 103.833333), new LatLng(1.3, 103.833333));
+        }
+        mAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, bounds,
                 null);
         mAutocompleteView.setAdapter(mAdapter);
-        selectImage();
+        setupImage();
 
         // Set up the 'clear text' button that clears the text in the autocomplete view
-
-
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_add_cart, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     public void setupBottomSheet(){
         mLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
@@ -168,8 +158,6 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         } else {
             finish();
         }
-
-
     }
 
     /**
@@ -190,104 +178,74 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
                 "Could not connect to Google API Client: Error " + connectionResult.getErrorCode(),
                 Toast.LENGTH_SHORT).show();
     }
-    Uri imageUri;
-    public void selectImage(){
 
-        CardView cameraCard = (CardView) findViewById(R.id.camera_button);
-        cameraCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ContentValues values= new ContentValues();
-                values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
-                imageUri = getContentResolver().insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                startActivityForResult(intent, REQUEST_CAMERA);
-            }
-        });
 
-        CardView galaryCard = (CardView) findViewById(R.id.gallery_button);
-        galaryCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(
-                        Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                intent.setType("image/*");
-                startActivityForResult(
-                        Intent.createChooser(intent, "Select Image"),
-                        SELECT_FILE);
-                
-
-            }
-        });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    public void  setupImage(){
         ImageView image = (ImageView) findViewById(R.id.selected_image);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_CAMERA) {
+        Intent intent = getIntent();
+        Uri myUri = Uri.parse(intent.getExtras().getString(ApplicationConstants.IMG_BUNDLE));
+        String[] projection = {MediaStore.MediaColumns.DATA};
+        Cursor cursor = managedQuery(myUri, projection, null, null,
+                null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        cursor.moveToFirst();
+        String selectedImagePath = cursor.getString(column_index);
+        Bitmap bm;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(selectedImagePath, options);
+        final int REQUIRED_SIZE = 200;
+        int scale = 1;
+        while (options.outWidth / scale / 2 >= REQUIRED_SIZE
+                && options.outHeight / scale / 2 >= REQUIRED_SIZE)
+            scale *= 2;
+        options.inSampleSize = scale;
+        options.inJustDecodeBounds = false;
+        bm = BitmapFactory.decodeFile(selectedImagePath, options);
+        image.setImageBitmap(bm);
 
-                try {
-                   Bitmap thumbnail = MediaStore.Images.Media.getBitmap(
-                            getContentResolver(), imageUri);
-                    image.setImageBitmap(thumbnail);
-                   String imageurl = getRealPathFromURI(imageUri);
-                } catch (Exception e) {
-                    e.printStackTrace();
+        /** try to get lat long **/
+        try{
+            String filePath = getRealPathFromURI(myUri);
+            ExifInterface exif = new ExifInterface(filePath);
+            String LATITUDE = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
+            String LATITUDE_REF = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
+            String LONGITUDE = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
+            String LONGITUDE_REF = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
+
+
+            if((LATITUDE !=null) && (LATITUDE_REF !=null) && (LONGITUDE != null) && (LONGITUDE_REF !=null)) {
+
+                if(LATITUDE_REF.equals("N")){
+                    Latitude = ApplicationConstants.convertToDegree(LATITUDE);
+                }
+                else{
+                    Latitude = 0 - ApplicationConstants.convertToDegree(LATITUDE);
                 }
 
-
-//                Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
-//                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-//                image.setImageBitmap(thumbnail);
-//                //thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-//                File destination = new File(Environment.getExternalStorageDirectory(),
-//                        System.currentTimeMillis() + ".jpg");
-//                FileOutputStream fo;
-//                try {
-//                    destination.createNewFile();
-//                    fo = new FileOutputStream(destination);
-//                    fo.write(bytes.toByteArray());
-//                    fo.close();
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-
+                if(LONGITUDE_REF.equals("E")){
+                    Longitude = ApplicationConstants.convertToDegree(LONGITUDE);
+                }
+                else{
+                    Longitude = 0 - ApplicationConstants.convertToDegree(LONGITUDE);
+                }
+                Log.d(TAG,"lat long of " +filePath +" : "+LATITUDE+ "  "+ LONGITUDE + LATITUDE_REF + LONGITUDE_REF);
+            }else{
+                //Check if from camera.
+                Log.d(TAG,"else");
+                String fromCam= (intent.getExtras().getString(ApplicationConstants.FROM_CAM));
+                if (fromCam!=null){
+                    Log.d(TAG,"from cam");
+                    Latitude=  Float.parseFloat(intent.getExtras().getString(ApplicationConstants.CAM_LAT));
+                    Longitude= Float.parseFloat(intent.getExtras().getString(ApplicationConstants.CAM_LONG));
+                }
             }
-            else if (requestCode == SELECT_FILE) {
-                Uri selectedImageUri = data.getData();
-                String[] projection = { MediaStore.MediaColumns.DATA };
-                Cursor cursor = managedQuery(selectedImageUri, projection, null, null,
-                        null);
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-                cursor.moveToFirst();
-                String selectedImagePath = cursor.getString(column_index);
-                Bitmap bm;
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(selectedImagePath, options);
-                final int REQUIRED_SIZE = 200;
-                int scale = 1;
-                while (options.outWidth / scale / 2 >= REQUIRED_SIZE
-                        && options.outHeight / scale / 2 >= REQUIRED_SIZE)
-                    scale *= 2;
-                options.inSampleSize = scale;
-                options.inJustDecodeBounds = false;
-                bm = BitmapFactory.decodeFile(selectedImagePath, options);
-                image.setImageBitmap(bm);
-            }
-            ViewSwitcher viewSwitcher = (ViewSwitcher) findViewById(R.id.viewswitcher);
-            viewSwitcher.showNext();
+
+            Log.d(TAG,"lat long of " +filePath +" : ("+String.valueOf(Latitude)+ " , "+ String.valueOf(Longitude)+")");
+        }catch (IOException e){
 
         }
+
     }
 
     /**
@@ -347,27 +305,11 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
             // Get the Place object from the buffer.
             final Place place = places.get(0);
 
-            // Format details of the place for display and show it in a TextView.
-//            mPlaceDetailsText.setText(formatPlaceDetails(getResources(), place.getName(),
-//                    place.getId(), place.getAddress(), place.getPhoneNumber(),
-//                    place.getWebsiteUri()));
-
-            // Display the third party attributions if set.
-            final CharSequence thirdPartyAttribution = places.getAttributions();
-            if (thirdPartyAttribution == null) {
-//                mPlaceDetailsAttribution.setVisibility(View.GONE);
-            } else {
-//                mPlaceDetailsAttribution.setText(Html.fromHtml(thirdPartyAttribution.toString()));
-//                mPlaceDetailsAttribution.setVisibility(View.VISIBLE);
-            }
-
             Log.i(TAG,"lat long"+place.getLatLng().toString());
             Log.i(TAG, "Place details received: " + place.getName());
             mAutocompleteView.setText(place.getName());
             mAutocompleteView.dismissDropDown();
             mAutocompleteView.setEnabled(false);
-
-            proceedForm();
             places.release();
         }
     };
@@ -381,25 +323,20 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         return cursor.getString(column_index);
     }
 
-    public void proceedForm(){
-       // mAutocompleteView.setVisibility(View.VISIBLE);
-        EditText nameEt = (EditText) findViewById(R.id.name_et);
-        nameEt.setVisibility(View.VISIBLE);
+    public void setupPlace (){
+        PlaceDetectionApi aplce = new PlaceDetectionApi() {
+            @Override
+            public PendingResult<PlaceLikelihoodBuffer> getCurrentPlace(GoogleApiClient googleApiClient, PlaceFilter placeFilter) {
+                return null;
+            }
 
-        TextView nameTv = (TextView) findViewById(R.id.name_title);
-        nameTv.setVisibility(View.VISIBLE);
-
-        EditText desEt = (EditText) findViewById(R.id.description_et);
-        desEt.setVisibility(View.VISIBLE);
-
-        TextView desTv = (TextView) findViewById(R.id.description_title);
-        desTv.setVisibility(View.VISIBLE);
-
-
-
-
-
+            @Override
+            public PendingResult<Status> reportDeviceAtPlace(GoogleApiClient googleApiClient, PlaceReport placeReport) {
+                return null;
+            }
+        };
     }
+
 
 
 }

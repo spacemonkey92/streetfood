@@ -1,13 +1,21 @@
 package com.spaceagelabs.streetbaba;
 
+import android.Manifest;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.GpsStatus;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -23,27 +31,24 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.location.places.AutocompletePrediction;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.PlaceBuffer;
-import com.google.android.gms.location.places.Places;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.spaceagelabs.streetbaba.UI.adapters.PlaceAutocompleteAdapter;
+import com.spaceagelabs.streetbaba.util.ApplicationConstants;
+import com.spaceagelabs.streetbaba.util.GPSTracker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class AddPhotoActivity extends AppCompatActivity {
 
     private static final int REQUEST_CAMERA = 101;
     private static final int SELECT_FILE = 102;
+    private static final int REQUEST_CODE_SOME_FEATURES_PERMISSIONS = 999;
     LoginButton loginButton;
     private static final String TAG = "AddCartActivity";
     private SlidingUpPanelLayout mLayout;
+    String lat,lng;
+    GPSTracker gpsTracker;
 
 
 
@@ -52,6 +57,9 @@ public class AddPhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_photo);
         selectImage();
+        locationManger();
+//        gpsTracker = new GPSTracker(AddPhotoActivity.this);
+
         // Set up the 'clear text' button that clears the text in the autocomplete view
     }
 
@@ -79,15 +87,15 @@ public class AddPhotoActivity extends AppCompatActivity {
 
 
     Uri imageUri;
-    public void selectImage(){
+
+    public void selectImage() {
 
         CardView cameraCard = (CardView) findViewById(R.id.camera_button);
         cameraCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ContentValues values= new ContentValues();
-                values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.TITLE, "New Picture" + ".jpg");
                 imageUri = getContentResolver().insert(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -111,57 +119,43 @@ public class AddPhotoActivity extends AppCompatActivity {
         });
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ImageView image = (ImageView) findViewById(R.id.selected_image);
         if (resultCode == RESULT_OK) {
-            Bitmap bm;
+            Intent intent = new Intent(AddPhotoActivity.this, AddCartActivity.class);
+            gpsTracker = new GPSTracker(AddPhotoActivity.this);
+            if (gpsTracker.getIsGPSTrackingEnabled())
+            {
+                Log.d(TAG,"started tracking...");
+                String lat =  String.valueOf(gpsTracker.getLatitude());
+                String lng=  String.valueOf(gpsTracker.getLongitude());
+                Log.d(TAG,"started tracking..."+lat+lng);
+                gpsTracker.stopUsingGPS();
+                intent.putExtra(ApplicationConstants.CAM_LAT, lat);
+                intent.putExtra(ApplicationConstants.CAM_LONG, lng);
+            }
             if (requestCode == REQUEST_CAMERA) {
                 try {
-                   bm = MediaStore.Images.Media.getBitmap(
-                           getContentResolver(), imageUri);
-                    image.setImageBitmap(bm);
-                   String imageurl = getRealPathFromURI(imageUri);
-                    Log.d(TAG,"image url"+imageurl);
-
+                    intent.putExtra(ApplicationConstants.FROM_CAM, "true");
+                    intent.putExtra(ApplicationConstants.IMG_BUNDLE, imageUri.toString());
+                    startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-            else if (requestCode == SELECT_FILE) {
+            } else if (requestCode == SELECT_FILE) {
                 Uri selectedImageUri = data.getData();
-                String[] projection = { MediaStore.MediaColumns.DATA };
-                Cursor cursor = managedQuery(selectedImageUri, projection, null, null,
-                        null);
-                int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-                cursor.moveToFirst();
-                String selectedImagePath = cursor.getString(column_index);
-
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(selectedImagePath, options);
-                final int REQUIRED_SIZE = 200;
-                int scale = 1;
-                while (options.outWidth / scale / 2 >= REQUIRED_SIZE
-                        && options.outHeight / scale / 2 >= REQUIRED_SIZE)
-                    scale *= 2;
-                options.inSampleSize = scale;
-                options.inJustDecodeBounds = false;
-                bm = BitmapFactory.decodeFile(selectedImagePath, options);
-                image.setImageBitmap(bm);
+                intent.putExtra(ApplicationConstants.IMG_BUNDLE, selectedImageUri.toString());
+                startActivity(intent);
             }
         }
     }
 
-    public String getRealPathFromURI(Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
-        Cursor cursor = managedQuery(contentUri, proj, null, null, null);
-        int column_index = cursor
-                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        return cursor.getString(column_index);
-    }
+    public void locationManger() {
 
+
+
+    }
 
 }
