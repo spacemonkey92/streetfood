@@ -158,6 +158,8 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         } else {
             finish();
         }
+
+        //TODO. check if dropdown open, close if open.
     }
 
     /**
