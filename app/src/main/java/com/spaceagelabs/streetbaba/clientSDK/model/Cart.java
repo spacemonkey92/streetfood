@@ -1,4 +1,4 @@
-package com.spaceagelabs.streetbaba.model;
+package com.spaceagelabs.streetbaba.clientSDK.model;
 
 import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;

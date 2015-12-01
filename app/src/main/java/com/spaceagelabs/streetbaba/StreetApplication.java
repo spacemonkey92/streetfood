@@ -1,7 +1,6 @@
 package com.spaceagelabs.streetbaba;
 
 
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -11,7 +10,7 @@ import android.util.Log;
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
-import com.spaceagelabs.streetbaba.model.Cart;
+import com.spaceagelabs.streetbaba.clientSDK.model.Cart;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

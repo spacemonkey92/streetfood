@@ -15,12 +15,11 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.melnykov.fab.FloatingActionButton;
 import com.melnykov.fab.ScrollDirectionListener;
 import com.parse.FunctionCallback;
-import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.spaceagelabs.streetbaba.UI.DividerItemDecoration;
 import com.spaceagelabs.streetbaba.UI.adapters.CartsAdapter;
 import com.spaceagelabs.streetbaba.UI.viewmodel.CartsViewModel;
-import com.spaceagelabs.streetbaba.model.Cart;
+import com.spaceagelabs.streetbaba.clientSDK.model.Cart;
 import com.spaceagelabs.streetbaba.util.GPSTracker;
 
 import java.util.ArrayList;
