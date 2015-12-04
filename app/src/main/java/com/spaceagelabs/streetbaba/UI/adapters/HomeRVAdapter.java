@@ -48,6 +48,7 @@ public class HomeRVAdapter extends RecyclerView.Adapter<HomeRVAdapter.MyViewHold
         viewHolder.heading.setText(currentData.getHeading());
         viewHolder.subheading.setText(currentData.getSubheading());
 
+
     }
 
     @Override

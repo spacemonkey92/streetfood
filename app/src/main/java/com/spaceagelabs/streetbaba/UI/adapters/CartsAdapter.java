@@ -1,6 +1,8 @@
 package com.spaceagelabs.streetbaba.UI.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +11,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.GetDataCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.spaceagelabs.streetbaba.R;
 import com.spaceagelabs.streetbaba.UI.viewmodel.CartsViewModel;
 
@@ -40,10 +45,29 @@ public class CartsAdapter extends RecyclerView.Adapter<CartsAdapter.MyViewHolder
 
 
     @Override
-    public void onBindViewHolder(MyViewHolder viewHolder, int i) {
+    public void onBindViewHolder(final MyViewHolder viewHolder, int i) {
         CartsViewModel currentData = data.get(i);
         if(currentData.getImage()==null){
 
+        }
+        ParseFile image = currentData.getParseImage();
+        if(image!=null){
+            Log.d(TAG,"image not null. Downloading....");
+            image.getDataInBackground(new GetDataCallback() {
+
+                @Override
+                public void done(byte[] bytes, ParseException e) {
+                    if(e==null){
+                        Log.d(TAG,"donload finished");
+                        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        viewHolder.cartImage.setImageBitmap(bmp);
+                    }else{
+                        viewHolder.cartImage.setImageResource(R.mipmap.ic_noun_53360_cc);
+                    }
+                }
+            });
+        }else{
+            viewHolder.cartImage.setImageResource(R.mipmap.ic_noun_53360_cc);// life saving line of code :D
         }
         viewHolder.cartName.setText(currentData.getCartName());
         viewHolder.cartAddress.setText(currentData.getCartAddress());
@@ -73,6 +97,7 @@ public class CartsAdapter extends RecyclerView.Adapter<CartsAdapter.MyViewHolder
         TextView rating;
         TextView reviewCount;
         View mView;
+        View cell;
 
 
         public MyViewHolder(View itemView) {
@@ -80,35 +105,30 @@ public class CartsAdapter extends RecyclerView.Adapter<CartsAdapter.MyViewHolder
             super(itemView);
             Log.d(TAG, "setting images and items");
             mView=itemView;
-
+            cell = (View) itemView.findViewById(R.id.cart_cell);
             cartImage =(ImageView) itemView.findViewById(R.id.cart_image);
             cartName =(TextView) itemView.findViewById(R.id.cart_name_TV);
             cartAddress =(TextView) itemView.findViewById(R.id.cart_address_TV);
             rating =(TextView) itemView.findViewById(R.id.rating);
             reviewCount =(TextView) itemView.findViewById(R.id.review_count);
+            cell.setOnClickListener(this);
 
         }
 
         @Override
         public void onClick(View view) {
-            //
             Log.d(TAG,"on click");
             if(clickListener!=null){
                 Log.d(TAG,"listner notnull");
                 clickListener.itemClick(view,getAdapterPosition());
             }
-
         }
-
-
     }
 
 
     public interface RVClickListener{
         //OnClick will work, but for better coding standard i made this listener to call the onclick from the fragment it self..
         public void itemClick(View view, int position);
-
-
     }
 
 }

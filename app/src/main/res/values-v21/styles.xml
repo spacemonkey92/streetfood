@@ -35,4 +35,13 @@
         <item name="colorControlActivated">@color/primaryColor</item>
     </style>
 
+
+
+        <style name="Theme.FullScreen" parent="AppTheme.Base">
+            <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+            <item name="android:statusBarColor">@android:color/transparent</item>
+        </style>
+
+
+
 </resources>

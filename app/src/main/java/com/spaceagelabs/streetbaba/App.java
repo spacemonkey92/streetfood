@@ -18,7 +18,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Created by Nitin on 1/9/15.
  */
-public class StreetApplication extends android.app.Application {
+public class App extends android.app.Application {
 
 
     // Debugging switch

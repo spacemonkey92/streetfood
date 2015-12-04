@@ -192,9 +192,7 @@ public class Tab1 extends Fragment implements HomeRVAdapter.RVClickListener {
         });
 
 
-
     }
-
 
 
     private void makeMeRequest() {
@@ -218,11 +216,11 @@ public class Tab1 extends Fragment implements HomeRVAdapter.RVClickListener {
 
                                 // Save the user profile info in a user property
                                 ParseUser currentUser = ParseUser.getCurrentUser();
-                                currentUser.put("name",jsonObject.getString("name"));
+                                currentUser.put("name", jsonObject.getString("name"));
                                 currentUser.setEmail(jsonObject.getString("email"));
                                 currentUser.put("profile", userProfile);
                                 currentUser.saveInBackground();
-                                Log.d(TAG,"saved profile");
+                                Log.d(TAG, "saved profile");
 
                                 // Show the user info
 //                                updateViewsWithProfileInfo();
@@ -259,41 +257,6 @@ public class Tab1 extends Fragment implements HomeRVAdapter.RVClickListener {
         proceedToAdd();
     }
 
-    private void updateViewsWithProfileInfo() {
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser.has("profile")) {
-            JSONObject userProfile = currentUser.getJSONObject("profile");
-            try {
-
-                if (userProfile.has("facebookId")) {
-                    Log.d(TAG, userProfile.getString("facebookId"));
-                } else {
-                    // Show the default, blank user profile picture
-                }
-
-                if (userProfile.has("name")) {
-                    Log.d(TAG, userProfile.getString("name"));
-                } else {
-                    Log.d(TAG, "");
-                }
-
-                if (userProfile.has("gender")) {
-                    Log.d(TAG, userProfile.getString("gender"));
-                } else {
-                    Log.d(TAG, "");
-                }
-
-                if (userProfile.has("email")) {
-                    Log.d(TAG, userProfile.getString("email"));
-                } else {
-                    Log.d(TAG, "");
-                }
-
-            } catch (JSONException e) {
-                Log.d(TAG, "Error parsing saved user data.");
-            }
-        }
-    }
 
     public void proceedToAdd(){
         Intent intent = new Intent(getActivity(),AddPhotoActivity.class);

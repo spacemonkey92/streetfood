@@ -9,6 +9,7 @@
     <android.support.v7.widget.CardView
         android:background="@drawable/ripple"
         android:id="@+id/normal_button"
+        android:clickable="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         card_view:cardBackgroundColor="@color/primaryColor"
@@ -18,7 +19,7 @@
         <RelativeLayout
             android:gravity="center"
             android:background="@drawable/primary_ripple"
-            android:clickable="true"
+            android:clickable="false"
             android:minWidth="@dimen/button_width"
             android:minHeight="@dimen/button_height"
             android:layout_width="match_parent"

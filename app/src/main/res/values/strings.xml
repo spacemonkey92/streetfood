@@ -4,6 +4,11 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">Street Baba </string>
+    
+    <dimen name="detail_backdrop_height">256dp</dimen>
+    <dimen name="card_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="list_item_avatar_size">40dp</dimen>
 
     <!--Home page -->
     <string name="share">Share</string>
@@ -29,12 +34,15 @@
     <string name="cart_post">POST</string>
 
     <!-- Applications keys-->
-    <string name="facebook_app_id">add your id here </string>
-      <string name="parse_app_id">add your id here </string>
-     <string name="parse_client_key">add your id here </string>  
-    <string name="google_places_API_key">add your id here </string>
-
-
-
+    <string name="facebook_app_id">Enter your key</string>
+    
+    
+    <string name="parse_app_id">Enter your key</string>
+    
+    <string name="parse_client_key">Enter your key</string>
+    
+    
+    <string name="google_places_API_key">Enter your key</string>
+ 
 
 </resources>

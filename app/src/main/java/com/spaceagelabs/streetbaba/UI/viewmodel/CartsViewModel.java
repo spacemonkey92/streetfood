@@ -2,6 +2,8 @@ package com.spaceagelabs.streetbaba.UI.viewmodel;
 
 import android.graphics.Bitmap;
 
+import com.parse.ParseFile;
+
 /**
  * Created by Nitin on 27/8/15.
  */
@@ -12,13 +14,17 @@ public class CartsViewModel {
     String cartAddress;
     String reviewCount;
     String rating;
+    String id;
+    ParseFile parseImage;
 
 
-    public CartsViewModel(String cartname,String cartAddress,String reviewCount,String rating){
+    public CartsViewModel(String id,String cartname,String cartAddress,String reviewCount,String rating,ParseFile parseImage){
         this.cartName=cartname;
         this.cartAddress=cartAddress;
         this.reviewCount=reviewCount;
         this.rating=rating;
+        this.parseImage=parseImage;
+        this.id= id;
     }
 
 
@@ -60,5 +66,21 @@ public class CartsViewModel {
 
     public void setRating(String rating) {
         this.rating = rating;
+    }
+
+    public ParseFile getParseImage() {
+        return parseImage;
+    }
+
+    public void setParseImage(ParseFile parseImage) {
+        this.parseImage = parseImage;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
