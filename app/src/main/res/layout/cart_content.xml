@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rating_CV"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="5dp"
+    card_view:cardCornerRadius="2dp"
+    card_view:cardElevation="2dp">
+
+    <TextView
+        android:text="Fish Bowl Noodle"
+        android:layout_marginLeft="@dimen/m_margin"
+        android:textColor="@color/primaryTextColor"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/ic_like"
+        android:layout_toEndOf="@+id/ic_like" />
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/m_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_marginLeft="@dimen/m_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ic_like"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_favorite_pink_24px"/>
+            <TextView
+                android:text="5 Likes"
+                android:layout_marginLeft="@dimen/m_margin"
+                android:textColor="@color/secondaryTextColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/ic_like"
+                android:layout_toEndOf="@+id/ic_like" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_marginTop="@dimen/m_margin"
+            android:layout_marginLeft="@dimen/m_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ic_loc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_favorite_pink_24px"/>
+            <TextView
+                android:text="Toh Guan Road"
+                android:id="@+id/address_TV"
+                android:layout_marginLeft="@dimen/m_margin"
+                android:textColor="@color/secondaryTextColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/ic_loc"/>
+            <TextView
+                android:text="Jurong east, Singapore"
+                android:layout_marginLeft="@dimen/m_margin"
+                android:layout_below="@+id/address_TV"
+                android:textColor="@color/secondaryTextColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/ic_loc" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_marginTop="@dimen/m_margin"
+            android:layout_marginLeft="@dimen/m_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ic_about"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_favorite_pink_24px"/>
+            <TextView
+                android:text="Found By :"
+                android:id="@+id/added_by_TV"
+                android:layout_marginLeft="@dimen/m_margin"
+                android:textColor="@color/secondaryTextColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/ic_about"/>
+            <TextView
+                android:text="Nitin Muthyala"
+                android:id="@+id/found_by_TV"
+                android:layout_marginLeft="@dimen/m_padding"
+                android:textColor="@color/primaryColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/added_by_TV"/>
+            <TextView
+                android:text="Jurong east, Singapore"
+                android:layout_marginLeft="@dimen/m_margin"
+                android:layout_below="@+id/added_by_TV"
+                android:textColor="@color/secondaryTextColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/ic_about" />
+        </RelativeLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

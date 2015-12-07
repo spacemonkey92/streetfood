@@ -46,8 +46,7 @@
         </activity>
         <activity
             android:theme="@style/Theme.FullScreen"
-            android:name=".CartDetailsActivity"
-            android:label="@string/title_activity_add_cart" >
+            android:name=".CartDetailsActivity">
         </activity>
     </application>
 

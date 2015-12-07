@@ -23,6 +23,8 @@ import com.parse.ParseCloud;
 import com.spaceagelabs.streetbaba.UI.DividerItemDecoration;
 import com.spaceagelabs.streetbaba.UI.adapters.CartsAdapter;
 import com.spaceagelabs.streetbaba.UI.viewmodel.CartsViewModel;
+import com.spaceagelabs.streetbaba.clientSDK.APIManager;
+import com.spaceagelabs.streetbaba.clientSDK.OnComplete;
 import com.spaceagelabs.streetbaba.clientSDK.model.Cart;
 import com.spaceagelabs.streetbaba.util.ApplicationConstants;
 import com.spaceagelabs.streetbaba.util.GPSTracker;
@@ -76,17 +78,13 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
         return v;
     }
 
-    public List<CartsViewModel> homeCardsData() {
-
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("version", "1");
-        params.put("range", 1);
+    public void homeCardsData() {
+        double lat=0,lng=0;
         gpsTracker = new GPSTracker(getContext());
         if (gpsTracker.getIsGPSTrackingEnabled()) {
-            Log.d(TAG, "started tracking...");
             gpsTracker.getLocation();
-            params.put("lat", gpsTracker.getLatitude());
-            params.put("long", gpsTracker.getLongitude());
+            lat = gpsTracker.getLatitude();
+            lng= gpsTracker.getLongitude();
             gpsTracker.stopUsingGPS();
             gpsTracker = null;
 
@@ -95,37 +93,22 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
             // dialog to turn on GPS owner.
         }
 
-
-        ParseCloud.callFunctionInBackground("getCarts", params, new FunctionCallback<List<Cart>>() {
-
+        APIManager.getInstance().getCarts(lat, lng, new OnComplete<ArrayList<CartsViewModel>>() {
             @Override
-            public void done(List<Cart> carts, com.parse.ParseException e) {
+            public void done(ArrayList<CartsViewModel> carts, Exception e) {
                 CircularProgressView progressView = (CircularProgressView) mView.findViewById(R.id.progress_view);
                 progressView.setVisibility(View.INVISIBLE);
-                Log.d(TAG, "done");
-                if (e == null) {
-                    if (carts != null) {
-                        for (Cart cart : carts) {
-                            String rating = "0" + " Likes";
-                            final CartsViewModel mCart = new CartsViewModel(cart.getObjectId(),cart.getName(), cart.getAddress(), String.valueOf(cart.getReviewCount()), rating, cart.getImage());
-//                            final CartsViewModel cardsMain = new CartsViewModel("Maharajaa","kavuri Hills, Madhapur, Hyderabad","12","3.7/5");
-                            allCarts.add(mCart);
-                        }
-                    }
-
-                } else {
-                    Log.d(TAG, "fail");
+                if(e==null){
+                    allCarts= carts;
+                    Log.d(TAG,"got from API manager");
+                    mRVAdapter = new CartsAdapter(getActivity(), carts);
+                    mRVAdapter.setClickListener(Tab2.this);
+                    mRecycler.addItemDecoration(new DividerItemDecoration(getActivity(), R.drawable.line_divider));
+                    mRecycler.setAdapter(mRVAdapter);
+                    mRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
                 }
-                //mRecycler =(RecyclerView) mView.findViewById(R.id.carts_recycle_view);
-                mRVAdapter = new CartsAdapter(getActivity(), allCarts);
-                mRVAdapter.setClickListener(Tab2.this);
-                mRecycler.addItemDecoration(new DividerItemDecoration(getActivity(), R.drawable.line_divider));
-                mRecycler.setAdapter(mRVAdapter);
-                mRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
-
             }
         });
-        return allCarts;
     }
 
     @Override
@@ -137,7 +120,8 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
         Intent i = new Intent(getActivity(),CartDetailsActivity.class);
         if(bm!=null){
             Log.d(TAG,"bit map set");
-            i.putExtra(ApplicationConstants.CART_IMG_BUNDLE,bm);
+            i.putExtra(ApplicationConstants.CART_IMG_BUNDLE, bm);
+            i.putExtra(ApplicationConstants.CART_ID_BUNDLE,cart.getId());
         }
         startActivity(i);
 

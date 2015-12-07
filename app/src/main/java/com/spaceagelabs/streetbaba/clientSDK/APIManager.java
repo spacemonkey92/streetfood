@@ -2,24 +2,39 @@ package com.spaceagelabs.streetbaba.clientSDK;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.view.View;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.parse.FunctionCallback;
 import com.parse.LogInCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.spaceagelabs.streetbaba.R;
+import com.spaceagelabs.streetbaba.UI.DividerItemDecoration;
+import com.spaceagelabs.streetbaba.UI.adapters.CartsAdapter;
+import com.spaceagelabs.streetbaba.UI.viewmodel.CartsDetailsModel;
+import com.spaceagelabs.streetbaba.UI.viewmodel.CartsViewModel;
 import com.spaceagelabs.streetbaba.clientSDK.model.Cart;
+import com.spaceagelabs.streetbaba.util.GPSTracker;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Nitin on 1/12/15.
@@ -29,9 +44,57 @@ public class APIManager {
     private static final String TAG = "APIManager";
 
     private static final APIManager instance= new APIManager();
+    private static final String API_VERSION = "1";
 
     public static APIManager getInstance(){
         return instance;
+    }
+
+    public void getCarts( double lat,double lng,final OnComplete<ArrayList<CartsViewModel>> onComplete){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("version", API_VERSION);
+        params.put("range", 1);
+        params.put("lat", lat);
+        params.put("long", lng);
+        final ArrayList<CartsViewModel> allCarts=new ArrayList<>();;
+        ParseCloud.callFunctionInBackground("getCarts", params, new FunctionCallback<List<Cart>>() {
+
+            @Override
+            public void done(List<Cart> carts, com.parse.ParseException e) {
+                if (e == null) {
+                    if (carts != null) {
+                        for (Cart cart : carts) {
+                            String rating = "0" + " Likes";
+                            final CartsViewModel mCart = new CartsViewModel(cart.getObjectId(), cart.getName(), cart.getAddress(), String.valueOf(cart.getReviewCount()), rating, cart.getImage());
+                            allCarts.add(mCart);
+                        }
+                    }
+                } else {
+                    Log.d(TAG,"error "+e.getMessage());
+                    onComplete.done(null,e);
+                }
+                onComplete.done(allCarts,null);
+            }
+        });
+    }
+
+    public  void getCartDetails(String cartId,String userId,OnComplete<CartsDetailsModel> onComplete){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("version", API_VERSION);
+        params.put("cartId", cartId);
+        params.put("userId", userId);
+
+        final ArrayList<CartsViewModel> allCarts=new ArrayList<>();;
+        ParseCloud.callFunctionInBackground("getCartDetails", params, new FunctionCallback<ArrayList<Object>>() {
+            @Override
+            public void done(ArrayList cartsDetailsModel, ParseException e) {
+                if(e==null){
+                    Log.d(TAG,"awesome , got it !"+cartsDetailsModel.get(0).toString());
+                }else{
+                    Log.d(TAG,"oops !"+e.getMessage());
+                }
+            }
+        });
     }
 
     public void saveFBUserInParse(final OnComplete<String> onComplete) {

@@ -29,7 +29,6 @@
             android:layout_margin="5dp"
             android:src="@mipmap/ic_cart_street_cc" />
 
-
     </android.support.v7.widget.CardView>
 
 
