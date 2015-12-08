@@ -78,7 +78,7 @@ public class APIManager {
         });
     }
 
-    public  void getCartDetails(String cartId,String userId,OnComplete<CartsDetailsModel> onComplete){
+    public  void getCartDetails(String cartId,String userId, final OnComplete<CartsDetailsModel> onComplete){
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("cartId", cartId);
@@ -87,9 +87,16 @@ public class APIManager {
         final ArrayList<CartsViewModel> allCarts=new ArrayList<>();;
         ParseCloud.callFunctionInBackground("getCartDetails", params, new FunctionCallback<ArrayList<Object>>() {
             @Override
-            public void done(ArrayList cartsDetailsModel, ParseException e) {
+            public void done(ArrayList response, ParseException e) {
+
                 if(e==null){
-                    Log.d(TAG,"awesome , got it !"+cartsDetailsModel.get(0).toString());
+                    Log.d(TAG, "awesome , got it !" + response.get(0).toString());
+
+                    ArrayList<Cart> carts = (ArrayList<Cart>) response.get(0);
+                    Cart cart = carts.get(0);
+                    CartsDetailsModel detailsModel = new CartsDetailsModel(cart,null,null,true);
+                    onComplete.done(detailsModel,null);
+
                 }else{
                     Log.d(TAG,"oops !"+e.getMessage());
                 }

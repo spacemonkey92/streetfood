@@ -199,7 +199,7 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         image.setImageBitmap(bm);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 80, stream);
+        bm.compress(Bitmap.CompressFormat.JPEG, 90, stream);
         byte[] byteArray = stream.toByteArray();
 
         parseImage = new ParseFile("omly.jpg", byteArray);

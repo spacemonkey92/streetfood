@@ -97,5 +97,13 @@ public class Cart extends ParseObject {
         return ParseQuery.getQuery(Cart.class);
     }
 
+    public int getLikesCount() {
+        return getInt("likes");
+    }
+
+    public void setLikesCount(int value) {
+        put("likes", value);
+    }
+
 
 }

@@ -20,11 +20,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.spaceagelabs.streetbaba.UI.viewmodel.CartsDetailsModel;
 import com.spaceagelabs.streetbaba.clientSDK.APIManager;
 import com.spaceagelabs.streetbaba.clientSDK.OnComplete;
+import com.spaceagelabs.streetbaba.clientSDK.model.Cart;
 import com.spaceagelabs.streetbaba.util.ApplicationConstants;
 
 import java.io.ByteArrayOutputStream;
@@ -65,10 +71,42 @@ public class CartDetailsActivity extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
         Glide.with(this).load(byteArray).centerCrop().into(imageView);
         String cartID=  intent.getStringExtra(ApplicationConstants.CART_ID_BUNDLE);
+        setDetailsLoading(true);
         APIManager.getInstance().getCartDetails(cartID, null, new OnComplete<CartsDetailsModel>() {
             @Override
             public void done(CartsDetailsModel var1, Exception e) {
-                Log.d(TAG, "done !");
+                setDetailsLoading(false);
+                if (e == null) {
+                    Cart cart = var1.getCart();
+                    TextView cartName = (TextView) findViewById(R.id.cart_name_details_TV);
+                    cartName.setText(cart.getName());
+
+                    TextView likes = (TextView) findViewById(R.id.likes_TV);
+                    likes.setText(cart.getLikesCount()+" likes");
+
+                    TextView address= (TextView) findViewById(R.id.address_TV);
+                    address.setText(cart.getAddress());
+
+                    TextView fulAddress= (TextView) findViewById(R.id.full_address_TV);
+                    fulAddress.setText(cart.getFullAddress());
+
+
+                    cart.getCreatedBy().fetchIfNeededInBackground(new GetCallback<ParseObject>() {
+                        @Override
+                        public void done(ParseObject parseObject, ParseException e) {
+                            TextView foundBy = (TextView) findViewById(R.id.found_by_TV);
+                            foundBy.setText((String) parseObject.get("name"));
+                            Log.d(TAG,"got user name "+parseObject.get("name"));
+                        }
+                    });
+
+                    TextView aboutCart= (TextView) findViewById(R.id.about_cart_TV);
+                    aboutCart.setText(cart.getAbout());
+
+
+                }else{
+                    //TODO. handle error.
+                }
             }
         });
 
@@ -77,12 +115,12 @@ public class CartDetailsActivity extends AppCompatActivity {
         likeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!liked){
+                if (!liked) {
                     likeBtn.setImageResource(R.mipmap.ic_favorite_pink_24px);
-                    liked=true;
-                }else{
+                    liked = true;
+                } else {
                     likeBtn.setImageResource(R.mipmap.ic_favorite_white_24px);
-                    liked=false;
+                    liked = false;
                 }
             }
         });
@@ -92,5 +130,17 @@ public class CartDetailsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_cart_details, menu);
         return true;
+    }
+
+    public void setDetailsLoading(boolean status){
+        View details= findViewById(R.id.cart_details);
+        CircularProgressView progressView = (CircularProgressView) findViewById(R.id.progress_view);
+        if(status){
+            details.setVisibility(View.INVISIBLE);
+            progressView.setVisibility(View.VISIBLE);
+        }else{
+            details.setVisibility(View.VISIBLE);
+            progressView.setVisibility(View.INVISIBLE);
+        }
     }
 }

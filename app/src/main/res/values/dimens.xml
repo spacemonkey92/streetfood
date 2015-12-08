@@ -12,6 +12,8 @@
     <dimen name="xl_margin">48dp</dimen>
     <dimen name="xxl_margin">88dp</dimen>
 
+    <dimen name="cart_heading">18sp</dimen>
+
     <!-- padding-->
     <dimen name="s_padding">2dp</dimen>
     <dimen name="m_padding">3dp</dimen>
