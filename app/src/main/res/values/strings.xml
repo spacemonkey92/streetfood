@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">Street Baba</string>
+    <string name="app_name">Omly Food</string>
     <string name="hello_world">Hello world!</string>
 
     <string name="action_settings">Settings</string>
-    <string name="title_activity_main">Street Baba </string>
+    <string name="title_activity_main">Omly Food</string>
     
     <dimen name="detail_backdrop_height">350dp</dimen>
     <dimen name="card_margin">16dp</dimen>
@@ -35,7 +35,7 @@
 
     <!-- Applications keys-->
     <string name="facebook_app_id">Enter your key</string>
-     
+
 
     <string name="parse_app_id">Enter your key</string>
 
@@ -43,6 +43,7 @@
 
 
     <string name="google_places_API_key">Enter your key</string>
+
 
 
 

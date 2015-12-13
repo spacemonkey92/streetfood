@@ -39,11 +39,17 @@
         <activity
             android:name=".AddCartActivity"
             android:label="@string/title_activity_add_cart" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*"/>
+            </intent-filter>
         </activity>
         <activity
             android:name=".AddPhotoActivity"
             android:label="@string/title_activity_add_cart" >
         </activity>
+
         <activity
             android:theme="@style/Theme.FullScreen"
             android:name=".CartDetailsActivity">

@@ -27,6 +27,7 @@ import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 import com.spaceagelabs.streetbaba.UI.viewmodel.CartsDetailsModel;
 import com.spaceagelabs.streetbaba.clientSDK.APIManager;
 import com.spaceagelabs.streetbaba.clientSDK.OnComplete;
@@ -41,6 +42,7 @@ public class CartDetailsActivity extends AppCompatActivity {
     public static final String EXTRA_NAME = "cheese_name";
     public static final String TAG= "cartDetailsActivity";
     boolean liked;
+    String cartID,userID;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,8 +51,7 @@ public class CartDetailsActivity extends AppCompatActivity {
         liked=false;
 
         Intent intent = getIntent();
-        final String cheeseName = intent.getStringExtra(EXTRA_NAME);
-
+        userID = ParseUser.getCurrentUser().getObjectId().toString();
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -70,9 +71,9 @@ public class CartDetailsActivity extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
         Glide.with(this).load(byteArray).centerCrop().into(imageView);
-        String cartID=  intent.getStringExtra(ApplicationConstants.CART_ID_BUNDLE);
+        cartID =  intent.getStringExtra(ApplicationConstants.CART_ID_BUNDLE);
         setDetailsLoading(true);
-        APIManager.getInstance().getCartDetails(cartID, null, new OnComplete<CartsDetailsModel>() {
+        APIManager.getInstance().getCartDetails(cartID, userID, new OnComplete<CartsDetailsModel>() {
             @Override
             public void done(CartsDetailsModel var1, Exception e) {
                 setDetailsLoading(false);
@@ -80,31 +81,26 @@ public class CartDetailsActivity extends AppCompatActivity {
                     Cart cart = var1.getCart();
                     TextView cartName = (TextView) findViewById(R.id.cart_name_details_TV);
                     cartName.setText(cart.getName());
-
                     TextView likes = (TextView) findViewById(R.id.likes_TV);
-                    likes.setText(cart.getLikesCount()+" likes");
-
-                    TextView address= (TextView) findViewById(R.id.address_TV);
+                    likes.setText(cart.getLikesCount() + " likes");
+                    TextView address = (TextView) findViewById(R.id.address_TV);
                     address.setText(cart.getAddress());
-
-                    TextView fulAddress= (TextView) findViewById(R.id.full_address_TV);
+                    TextView fulAddress = (TextView) findViewById(R.id.full_address_TV);
                     fulAddress.setText(cart.getFullAddress());
-
-
                     cart.getCreatedBy().fetchIfNeededInBackground(new GetCallback<ParseObject>() {
                         @Override
                         public void done(ParseObject parseObject, ParseException e) {
                             TextView foundBy = (TextView) findViewById(R.id.found_by_TV);
                             foundBy.setText((String) parseObject.get("name"));
-                            Log.d(TAG,"got user name "+parseObject.get("name"));
+                            Log.d(TAG, "got user name " + parseObject.get("name"));
                         }
                     });
 
-                    TextView aboutCart= (TextView) findViewById(R.id.about_cart_TV);
+                    TextView aboutCart = (TextView) findViewById(R.id.about_cart_TV);
                     aboutCart.setText(cart.getAbout());
 
 
-                }else{
+                } else {
                     //TODO. handle error.
                 }
             }
@@ -118,9 +114,11 @@ public class CartDetailsActivity extends AppCompatActivity {
                 if (!liked) {
                     likeBtn.setImageResource(R.mipmap.ic_favorite_pink_24px);
                     liked = true;
+                    likePhoto();
                 } else {
                     likeBtn.setImageResource(R.mipmap.ic_favorite_white_24px);
                     liked = false;
+                    dislikePhoto();
                 }
             }
         });
@@ -130,6 +128,32 @@ public class CartDetailsActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_cart_details, menu);
         return true;
+    }
+
+    public  void likePhoto(){
+        if(APIManager.getInstance().isUserLoggedIn()){
+            APIManager.getInstance().likeCart(cartID, userID, new OnComplete<Boolean>() {
+                @Override
+                public void done(Boolean var1, Exception e) {
+                    //done
+                }
+            });
+        }else{
+            //TODO. handle anonymous users.
+        }
+    }
+
+    public  void dislikePhoto(){
+        if(APIManager.getInstance().isUserLoggedIn()){
+            APIManager.getInstance().dislikeCart(cartID, userID, new OnComplete<Boolean>() {
+                @Override
+                public void done(Boolean var1, Exception e) {
+                    //done
+                }
+            });
+        }else{
+            //TODO. handle anonymous users.
+        }
     }
 
     public void setDetailsLoading(boolean status){

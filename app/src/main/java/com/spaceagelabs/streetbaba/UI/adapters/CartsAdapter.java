@@ -3,6 +3,7 @@ package com.spaceagelabs.streetbaba.UI.adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,31 +44,44 @@ public class CartsAdapter extends RecyclerView.Adapter<CartsAdapter.MyViewHolder
     }
 
 
+    @Override
+    public void onViewAttachedToWindow(MyViewHolder holder) {
+        Log.d(TAG,"view attached to window");
+
+        super.onViewAttachedToWindow(holder);
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        Log.d(TAG, "detached ");
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
 
     @Override
     public void onBindViewHolder(final MyViewHolder viewHolder, int i) {
         CartsViewModel currentData = data.get(i);
-        if(currentData.getImage()==null){
-
-        }
         ParseFile image = currentData.getParseImage();
-        if(image!=null){
-            Log.d(TAG,"image not null. Downloading....");
-            image.getDataInBackground(new GetDataCallback() {
-
-                @Override
-                public void done(byte[] bytes, ParseException e) {
-                    if(e==null){
-                        Log.d(TAG,"donload finished");
-                        Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        viewHolder.cartImage.setImageBitmap(bmp);
-                    }else{
-                        viewHolder.cartImage.setImageResource(R.mipmap.ic_noun_53360_cc);
+        viewHolder.cartImage.getDrawable();
+        if(!viewHolder.picAssigned){
+            Log.d(TAG,"pic not assigned");
+            if(image!=null){
+                Log.d(TAG,"image not null. Downloading....");
+                image.getDataInBackground(new GetDataCallback(){
+                    @Override
+                    public void done(byte[] bytes, ParseException e){
+                        if(e==null){
+                            Log.d(TAG,"download finished");
+                            Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            viewHolder.cartImage.setImageBitmap(bmp);
+                        }else{
+                            viewHolder.cartImage.setImageResource(R.mipmap.ic_noun_53360_cc);
+                        }
                     }
-                }
-            });
-        }else{
-            viewHolder.cartImage.setImageResource(R.mipmap.ic_noun_53360_cc);// life saving line of code :D
+                });
+            }else{
+                viewHolder.cartImage.setImageResource(R.mipmap.ic_noun_53360_cc);// life saving line of code :D
+                viewHolder.picAssigned = true;
+            }
         }
         viewHolder.cartName.setText(currentData.getCartName());
         viewHolder.cartAddress.setText(currentData.getCartAddress());
@@ -98,6 +112,7 @@ public class CartsAdapter extends RecyclerView.Adapter<CartsAdapter.MyViewHolder
         TextView reviewCount;
         View mView;
         View cell;
+        boolean picAssigned = false;
 
 
         public MyViewHolder(View itemView) {

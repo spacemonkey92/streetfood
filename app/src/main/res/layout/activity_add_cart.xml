@@ -102,7 +102,7 @@
                 android:clickable="true"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
-                android:text="Street Baba"
+                android:text="Omly Food"
                 android:textSize="26sp" />
 
             <TextView

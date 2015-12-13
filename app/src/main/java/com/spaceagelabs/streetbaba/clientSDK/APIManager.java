@@ -98,6 +98,43 @@ public class APIManager {
                     onComplete.done(detailsModel,null);
 
                 }else{
+                    Log.d(TAG, "oops !" + e.getMessage());
+                }
+            }
+        });
+    }
+
+    public  void likeCart(String cartId,String userId, final OnComplete<Boolean> onComplete){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("version", API_VERSION);
+        params.put("cartId", cartId);
+        params.put("userId", userId);
+        ParseCloud.callFunctionInBackground("likeCart", params, new FunctionCallback<String>() {
+            @Override
+            public void done(String aBoolean, ParseException e) {
+                if(e==null){
+                    Log.d(TAG, "awesome , Liked it!");
+                    onComplete.done(true,null);
+
+                }else{
+                    Log.d(TAG,"oops !"+e.getMessage());
+                }
+            }
+        });
+    }
+    public  void dislikeCart(String cartId,String userId, final OnComplete<Boolean> onComplete){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("version", API_VERSION);
+        params.put("cartId", cartId);
+        params.put("userId", userId);
+        ParseCloud.callFunctionInBackground("dislikeCart", params, new FunctionCallback<String>() {
+            @Override
+            public void done(String aBoolean, ParseException e) {
+                if(e==null){
+                    Log.d(TAG, "awesome , disliked it!");
+                    onComplete.done(true,null);
+
+                }else{
                     Log.d(TAG,"oops !"+e.getMessage());
                 }
             }
