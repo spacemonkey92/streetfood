@@ -64,14 +64,15 @@ public class APIManager {
                 if (e == null) {
                     if (carts != null) {
                         for (Cart cart : carts) {
-                            String rating = "0" + " Likes";
+                            int likes = cart.getLikesCount();
+                            String rating =""+String.valueOf(likes)+" likes" ;
                             final CartsViewModel mCart = new CartsViewModel(cart.getObjectId(), cart.getName(), cart.getAddress(), String.valueOf(cart.getReviewCount()), rating, cart.getImage());
                             allCarts.add(mCart);
                         }
                     }
                 } else {
                     Log.d(TAG,"error "+e.getMessage());
-                    onComplete.done(null,e);
+                    onComplete.done(null, e);
                 }
                 onComplete.done(allCarts,null);
             }
@@ -94,7 +95,15 @@ public class APIManager {
 
                     ArrayList<Cart> carts = (ArrayList<Cart>) response.get(0);
                     Cart cart = carts.get(0);
-                    CartsDetailsModel detailsModel = new CartsDetailsModel(cart,null,null,true);
+                    Integer liked = (Integer) response.get(1);
+                    Log.d(TAG,"got liked :"+liked.toString());
+                    boolean like;
+                    if (liked == 1){
+                        like= true;
+                    }else{
+                        like = false;
+                    }
+                    CartsDetailsModel detailsModel = new CartsDetailsModel(cart,null,null,like);
                     onComplete.done(detailsModel,null);
 
                 }else{
@@ -132,6 +141,24 @@ public class APIManager {
             public void done(String aBoolean, ParseException e) {
                 if(e==null){
                     Log.d(TAG, "awesome , disliked it!");
+                    onComplete.done(true,null);
+
+                }else{
+                    Log.d(TAG,"oops !"+e.getMessage());
+                }
+            }
+        });
+    }
+
+    public  void deleteCart(String cartId, final OnComplete<Boolean> onComplete){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("version", API_VERSION);
+        params.put("cartId", cartId);
+        ParseCloud.callFunctionInBackground("deleteCart", params, new FunctionCallback<String>() {
+            @Override
+            public void done(String aBoolean, ParseException e) {
+                if(e==null){
+                    Log.d(TAG, "awesome , Liked it!");
                     onComplete.done(true,null);
 
                 }else{

@@ -213,7 +213,6 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
             String LONGITUDE = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
             String LONGITUDE_REF = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
 
-
             if((LATITUDE !=null) && (LATITUDE_REF !=null) && (LONGITUDE != null) && (LONGITUDE_REF !=null)) {
 
                 if(LATITUDE_REF.equals("N")){

@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
@@ -39,9 +40,10 @@ import java.util.Random;
 
 public class CartDetailsActivity extends AppCompatActivity {
 
+    Menu menu;
     public static final String EXTRA_NAME = "cheese_name";
     public static final String TAG= "cartDetailsActivity";
-    boolean liked;
+    boolean liked,ownCart;
     String cartID,userID;
 
     @Override
@@ -50,20 +52,18 @@ public class CartDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_cart_detail);
         liked=false;
 
+
         Intent intent = getIntent();
         userID = ParseUser.getCurrentUser().getObjectId().toString();
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-//        CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-//        collapsingToolbar.setTitle(cheeseName);
-
         loadBackdrop();
     }
 
     private void loadBackdrop() {
+        final FloatingActionButton likeBtn = (FloatingActionButton) findViewById(R.id.like_button);
         final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
         Intent intent = getIntent();
         Bitmap bitmap = (Bitmap) intent.getParcelableExtra(ApplicationConstants.CART_IMG_BUNDLE);
@@ -79,6 +79,7 @@ public class CartDetailsActivity extends AppCompatActivity {
                 setDetailsLoading(false);
                 if (e == null) {
                     Cart cart = var1.getCart();
+
                     TextView cartName = (TextView) findViewById(R.id.cart_name_details_TV);
                     cartName.setText(cart.getName());
                     TextView likes = (TextView) findViewById(R.id.likes_TV);
@@ -99,7 +100,28 @@ public class CartDetailsActivity extends AppCompatActivity {
                     TextView aboutCart = (TextView) findViewById(R.id.about_cart_TV);
                     aboutCart.setText(cart.getAbout());
 
-
+                    if (var1.isLiked()) {
+                        likeBtn.setImageResource(R.mipmap.ic_favorite_pink_24px);
+                        liked = true;
+                    } else {
+                        likeBtn.setImageResource(R.mipmap.ic_favorite_white_24px);
+                        liked = false;
+                    }
+                    MenuItem menuItem = menu.findItem(R.id.action_settings);
+                    if (cart.getCreatedBy().getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                        menuItem.setTitle("Delete");
+                        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                deleteCart();
+                                return true;
+                            }
+                        });
+                        ownCart = true;
+                    } else {
+                        menuItem.setTitle("Report");
+                        ownCart = false;
+                    }
                 } else {
                     //TODO. handle error.
                 }
@@ -107,7 +129,6 @@ public class CartDetailsActivity extends AppCompatActivity {
         });
 
 
-        final FloatingActionButton likeBtn = (FloatingActionButton) findViewById(R.id.like_button);
         likeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,6 +148,8 @@ public class CartDetailsActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_cart_details, menu);
+        this.menu= menu;
+
         return true;
     }
 
@@ -149,6 +172,23 @@ public class CartDetailsActivity extends AppCompatActivity {
                 @Override
                 public void done(Boolean var1, Exception e) {
                     //done
+                }
+            });
+        }else{
+            //TODO. handle anonymous users.
+        }
+    }
+
+    public  void deleteCart(){
+        if(APIManager.getInstance().isUserLoggedIn()){
+            APIManager.getInstance().deleteCart(cartID, new OnComplete<Boolean>() {
+                @Override
+                public void done(Boolean var1, Exception e) {
+                    if(e==null){
+                        Toast.makeText(CartDetailsActivity.this,"Deleted you post.",Toast.LENGTH_SHORT).show();
+                        finish();
+                        //TODO. deleted cart.
+                    }
                 }
             });
         }else{
