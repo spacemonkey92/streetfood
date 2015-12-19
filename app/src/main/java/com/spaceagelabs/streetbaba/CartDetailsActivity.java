@@ -33,9 +33,11 @@ import com.spaceagelabs.streetbaba.UI.viewmodel.CartsDetailsModel;
 import com.spaceagelabs.streetbaba.clientSDK.APIManager;
 import com.spaceagelabs.streetbaba.clientSDK.OnComplete;
 import com.spaceagelabs.streetbaba.clientSDK.model.Cart;
+import com.spaceagelabs.streetbaba.clientSDK.model.Review;
 import com.spaceagelabs.streetbaba.util.ApplicationConstants;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class CartDetailsActivity extends AppCompatActivity {
@@ -60,6 +62,7 @@ public class CartDetailsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         loadBackdrop();
+        getCartReviews();
     }
 
     private void loadBackdrop() {
@@ -184,8 +187,8 @@ public class CartDetailsActivity extends AppCompatActivity {
             APIManager.getInstance().deleteCart(cartID, new OnComplete<Boolean>() {
                 @Override
                 public void done(Boolean var1, Exception e) {
-                    if(e==null){
-                        Toast.makeText(CartDetailsActivity.this,"Deleted you post.",Toast.LENGTH_SHORT).show();
+                    if (e == null) {
+                        Toast.makeText(CartDetailsActivity.this, "Deleted you post.", Toast.LENGTH_SHORT).show();
                         finish();
                         //TODO. deleted cart.
                     }
@@ -206,5 +209,16 @@ public class CartDetailsActivity extends AppCompatActivity {
             details.setVisibility(View.VISIBLE);
             progressView.setVisibility(View.INVISIBLE);
         }
+    }
+
+    public void getCartReviews(){
+        cartID =  getIntent().getStringExtra(ApplicationConstants.CART_ID_BUNDLE);
+        APIManager.getInstance().getCartReview(cartID, new OnComplete<ArrayList<Review>>() {
+            @Override
+            public void done(ArrayList<Review> var1, Exception e) {
+
+            }
+        });
+
     }
 }

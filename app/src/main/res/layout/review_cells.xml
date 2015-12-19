@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/review_height"
+    android:background="@drawable/ripple"
+    android:clickable="false"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_marginLeft="@dimen/m_margin"
+        android:id="@+id/relativeLayout">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profile_image"
+            android:layout_width="@dimen/review_pic_height"
+            android:layout_height="@dimen/review_pic_width"
+            android:src="@mipmap/ic_name_hat"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/lightPrimaryColor"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_marginLeft="@dimen/m_margin"
+        android:layout_alignParentRight="true"
+        android:id="@+id/texts_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_toRightOf="@+id/relativeLayout"
+        android:layout_toEndOf="@+id/relativeLayout">
+
+        <TextView
+            android:id="@+id/heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:clickable="false"
+            android:text="Nitin Muthyala"
+            android:textColor="@color/primaryTextColor"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/subhead"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:clickable="false"
+            android:text="Explore and discover awesome street food aroudn you."
+            android:textColor="@color/secondaryTextColor" />
+    </LinearLayout>
+</RelativeLayout>

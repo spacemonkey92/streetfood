@@ -33,7 +33,7 @@
     <string name="cart_description_hint">Tell the world whats awesome about your food discovery, what to eat and what not to. A brief description of the location. </string>
     <string name="cart_post">POST</string>
 
-    <!-- Applications keys-->
+    <!--&lt;!&ndash; Applications keys&ndash;&gt;-->
     <string name="facebook_app_id">Enter your key</string>
 
 
@@ -43,6 +43,8 @@
 
 
     <string name="google_places_API_key">Enter your key</string>
+
+
 
 
 

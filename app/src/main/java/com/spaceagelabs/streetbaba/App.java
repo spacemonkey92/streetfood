@@ -11,6 +11,7 @@ import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.spaceagelabs.streetbaba.clientSDK.model.Cart;
+import com.spaceagelabs.streetbaba.clientSDK.model.Review;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -39,6 +40,7 @@ public class App extends android.app.Application {
         String PARSE_CLIENT_KEY = this.getApplicationContext().getResources().getString(R.string.parse_client_key);
 
         ParseObject.registerSubclass(Cart.class);
+        ParseObject.registerSubclass(Review.class);
         Parse.initialize(this, APP_ID, PARSE_CLIENT_KEY);
         ParseFacebookUtils.initialize(this, PARSE_FB);
         printHash();

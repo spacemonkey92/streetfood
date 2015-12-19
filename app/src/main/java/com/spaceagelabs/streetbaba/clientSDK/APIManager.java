@@ -24,6 +24,7 @@ import com.spaceagelabs.streetbaba.UI.adapters.CartsAdapter;
 import com.spaceagelabs.streetbaba.UI.viewmodel.CartsDetailsModel;
 import com.spaceagelabs.streetbaba.UI.viewmodel.CartsViewModel;
 import com.spaceagelabs.streetbaba.clientSDK.model.Cart;
+import com.spaceagelabs.streetbaba.clientSDK.model.Review;
 import com.spaceagelabs.streetbaba.util.GPSTracker;
 
 import org.json.JSONException;
@@ -107,6 +108,27 @@ public class APIManager {
                     onComplete.done(detailsModel,null);
 
                 }else{
+                    Log.d(TAG, "oops !" + e.getMessage());
+                }
+            }
+        });
+    }
+
+    public void getCartReview(String cartId, final OnComplete<ArrayList<Review>> onComplete){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("version", API_VERSION);
+        params.put("cartId", cartId);
+        Log.d(TAG,"getting reviews");
+        ParseCloud.callFunctionInBackground("getReviews", params, new FunctionCallback<ArrayList<Review>>() {
+            @Override
+            public void done(ArrayList<Review> response, ParseException e) {
+
+                if(e==null){
+                    Log.d(TAG,"gor review :"+response.toString());
+                    onComplete.done(response,null);
+
+                }else{
+                    Log.d(TAG,"failed getting reviews");
                     Log.d(TAG, "oops !" + e.getMessage());
                 }
             }
