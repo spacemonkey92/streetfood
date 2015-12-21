@@ -118,7 +118,7 @@ public class APIManager {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("cartId", cartId);
-        Log.d(TAG,"getting reviews");
+        Log.d(TAG, "getting reviews");
         ParseCloud.callFunctionInBackground("getReviews", params, new FunctionCallback<ArrayList<Review>>() {
             @Override
             public void done(ArrayList<Review> response, ParseException e) {
@@ -153,6 +153,29 @@ public class APIManager {
             }
         });
     }
+
+    public  void reviewCart(String cartId,String userId,String body, final OnComplete<Boolean> onComplete){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("version", API_VERSION);
+        params.put("cartId", cartId);
+        params.put("userId", userId);
+        params.put("body", body);
+        ParseCloud.callFunctionInBackground("postReview", params, new FunctionCallback<String>() {
+            @Override
+            public void done(String aBoolean, ParseException e) {
+                if(e==null){
+                    Log.d(TAG, "posted review successfully");
+                    onComplete.done(true,null);
+
+                }else{
+                    Log.d(TAG,"oops !"+e.getMessage());
+                }
+            }
+        });
+    }
+
+
+
     public  void dislikeCart(String cartId,String userId, final OnComplete<Boolean> onComplete){
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);

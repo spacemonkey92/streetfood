@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +31,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.spaceagelabs.streetbaba.UI.ReviewsAdapter;
 import com.spaceagelabs.streetbaba.UI.viewmodel.CartsDetailsModel;
 import com.spaceagelabs.streetbaba.clientSDK.APIManager;
 import com.spaceagelabs.streetbaba.clientSDK.OnComplete;
@@ -43,7 +46,6 @@ import java.util.Random;
 public class CartDetailsActivity extends AppCompatActivity {
 
     Menu menu;
-    public static final String EXTRA_NAME = "cheese_name";
     public static final String TAG= "cartDetailsActivity";
     boolean liked,ownCart;
     String cartID,userID;
@@ -53,10 +55,11 @@ public class CartDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart_detail);
         liked=false;
+        ParseUser user = ParseUser.getCurrentUser();
+        if(user!=null){
+            userID = user.getObjectId();
+        }
 
-
-        Intent intent = getIntent();
-        userID = ParseUser.getCurrentUser().getObjectId().toString();
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -111,7 +114,7 @@ public class CartDetailsActivity extends AppCompatActivity {
                         liked = false;
                     }
                     MenuItem menuItem = menu.findItem(R.id.action_settings);
-                    if (cart.getCreatedBy().getObjectId().equals(ParseUser.getCurrentUser().getObjectId())) {
+                    if (cart.getCreatedBy().getObjectId().equals(userID)) {
                         menuItem.setTitle("Delete");
                         menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
@@ -215,10 +218,49 @@ public class CartDetailsActivity extends AppCompatActivity {
         cartID =  getIntent().getStringExtra(ApplicationConstants.CART_ID_BUNDLE);
         APIManager.getInstance().getCartReview(cartID, new OnComplete<ArrayList<Review>>() {
             @Override
-            public void done(ArrayList<Review> var1, Exception e) {
-
+            public void done(ArrayList<Review> reviews, Exception e) {
+                if(e==null){
+                    Log.d(TAG,"displaying reviews");
+                    LinearLayout reviewLayout = (LinearLayout) findViewById(R.id.review_list);
+                    LinearLayout postReviewLayout = (LinearLayout) findViewById(R.id.review_post_ll);
+                    ReviewsAdapter adapter = new ReviewsAdapter(getApplicationContext(),reviewLayout,reviews,userID,postReviewLayout);
+                    adapter.setupView();
+                }
             }
         });
-
     }
+
+    public void sendReview(View view) {
+        EditText reviewBoodyET = (EditText) findViewById(R.id.review_ET);
+        String body = reviewBoodyET.getText().toString();
+        if(body!=null){
+            if(body.length()>0){
+                if(APIManager.getInstance().isUserLoggedIn()){
+                    APIManager.getInstance().reviewCart(cartID, userID, body, new OnComplete<Boolean>() {
+                        @Override
+                        public void done(Boolean var1, Exception e) {
+                            if(e==null){
+                                getCartReviews();
+                                //Disable Reviews
+                                disableReviews();
+                            }else{
+                                Toast.makeText(CartDetailsActivity.this,"Sorry could not post your review, try again later !",Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }else{
+                    // TODO: 22/12/15 manage login.
+                }
+            }
+        }
+    }
+
+    public void disableReviews(){
+        LinearLayout reviewLayout = (LinearLayout) findViewById(R.id.review_post_ll);
+        if(reviewLayout!=null){
+            reviewLayout.setVisibility(View.INVISIBLE);
+        }
+    }
+
+
 }

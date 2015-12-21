@@ -70,10 +70,75 @@
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true" />
 
+            <View
+                android:id="@+id/line1"
+                android:layout_below="@id/cart_details"
+                android:layout_marginTop="@dimen/m_margin"
+                android:layout_marginBottom="@dimen/m_margin"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/dividerColor"/>
+
+            <TextView
+                android:id="@+id/review_heading"
+                android:layout_marginLeft="@dimen/m_margin"
+                android:layout_marginBottom="@dimen/m_margin"
+                android:layout_below="@+id/line1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="Reviews"
+                />
+
+            <LinearLayout
+                android:layout_below="@id/review_heading"
+                android:id="@+id/review_list"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </LinearLayout>
+            <View
+                android:id="@+id/line2"
+                android:layout_below="@id/review_list"
+                android:layout_marginTop="@dimen/m_margin"
+                android:layout_marginBottom="@dimen/m_margin"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/dividerColor"/>
+
+            <LinearLayout
+                android:id="@+id/review_post_ll"
+                android:layout_below="@id/line2"
+                android:layout_marginLeft="@dimen/xxs_margin"
+                android:layout_marginRight="@dimen/xxs_margin"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:hint="Write Review"
+                    android:layout_weight="6"
+                    android:layout_width="0dp"
+                    android:layout_gravity="center"
+                    android:id="@+id/review_ET"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine">
+                </android.support.v7.widget.AppCompatEditText>
+
+                <ImageView
+                    android:onClick="sendReview"
+                    android:layout_weight="1"
+                    android:foregroundGravity="left"
+                    android:id="@+id/ic_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/ic_send_black_36dp"
+                    android:layout_gravity="center"
+                    />
+            </LinearLayout>
 
         </RelativeLayout>
-
-
 
     </android.support.v4.widget.NestedScrollView>
 

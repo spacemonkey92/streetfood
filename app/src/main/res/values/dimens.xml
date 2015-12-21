@@ -31,8 +31,8 @@
     <dimen name="cart_pic_height">70dp</dimen>
     <dimen name="cart_pic_width">70dp</dimen>
 
-    <dimen name="review_pic_height">24dp</dimen>
-    <dimen name="review_pic_width">24dp</dimen>
+    <dimen name="review_pic_height">36dp</dimen>
+    <dimen name="review_pic_width">36dp</dimen>
 
     <dimen name="review_height">68dp</dimen>
     <dimen name="review_width">48dp</dimen>
