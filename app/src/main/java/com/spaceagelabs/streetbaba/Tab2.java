@@ -1,6 +1,7 @@
 package com.spaceagelabs.streetbaba;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -44,6 +45,18 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
     private final static String TAG = "ViewCartsTab";
     GPSTracker gpsTracker;
     List<CartsViewModel> allCarts;
+    OnCartsDataListener mOncarOnCartsDataListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mOncarOnCartsDataListener = (OnCartsDataListener)activity;
+        }catch (ClassCastException e){
+
+        }
+
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -106,6 +119,14 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
                     mRecycler.addItemDecoration(new DividerItemDecoration(getActivity(), R.drawable.line_divider));
                     mRecycler.setAdapter(mRVAdapter);
                     mRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+                    //now send the data to the activity, to mark the map;
+                    if(mOncarOnCartsDataListener!=null){
+                        Log.d(TAG, "data received to Tab 1, sending to activity..");
+                        mOncarOnCartsDataListener.onCartsDataReceived(carts);
+                    }
+
+
                 }
             }
         });
@@ -126,4 +147,13 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
         startActivity(i);
 
     }
+
+    public interface OnCartsDataListener {
+
+        public void onCartsDataReceived(ArrayList<CartsViewModel> cartsViewModels);
+
+    }
+
+
+
 }

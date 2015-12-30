@@ -4,7 +4,7 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">Omly Food</string>
-    
+
     <dimen name="detail_backdrop_height">350dp</dimen>
     <dimen name="card_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
@@ -32,6 +32,7 @@
     <string name="cart_description">About the food</string>
     <string name="cart_description_hint">Tell the world whats awesome about your food discovery, what to eat and what not to. A brief description of the location. </string>
     <string name="cart_post">POST</string>
+    <string name="title_activity_maps">Map</string>
 
     <!--&lt;!&ndash; Applications keys&ndash;&gt;-->
     <!--<string name="facebook_app_id">Enter your key</string>-->
@@ -43,6 +44,7 @@
 
 
     <!--<string name="google_places_API_key">Enter your key</string>-->
+
 
 
 

@@ -41,7 +41,6 @@ public class ReviewsAdapter {
 
      public void setupView() {
          Log.d(TAG, "setup view 1");
-
         if ( reviewsData !=null) {
             Log.d(TAG,"setup view 2");
             if(reviewsData.size()>0){
@@ -70,7 +69,6 @@ public class ReviewsAdapter {
                         reviewLayout.addView(cellView);
                     }
                 }
-
             }
         }else {
             if (reviewLayout==null){

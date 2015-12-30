@@ -3,6 +3,7 @@ package com.spaceagelabs.streetbaba.UI.viewmodel;
 import android.graphics.Bitmap;
 
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 
 /**
  * Created by Nitin on 27/8/15.
@@ -16,15 +17,17 @@ public class CartsViewModel {
     String rating;
     String id;
     ParseFile parseImage;
+    ParseGeoPoint geoPoint;
 
 
-    public CartsViewModel(String id,String cartname,String cartAddress,String reviewCount,String rating,ParseFile parseImage){
+    public CartsViewModel(String id,String cartname,String cartAddress,String reviewCount,String rating,ParseFile parseImage,ParseGeoPoint geoPoint){
         this.cartName=cartname;
         this.cartAddress=cartAddress;
         this.reviewCount=reviewCount;
         this.rating=rating;
         this.parseImage=parseImage;
         this.id= id;
+        this.geoPoint = geoPoint;
     }
 
 
@@ -82,5 +85,13 @@ public class CartsViewModel {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public ParseGeoPoint getGeoPoint() {
+        return geoPoint;
+    }
+
+    public void setGeoPoint(ParseGeoPoint geoPoint) {
+        this.geoPoint = geoPoint;
     }
 }

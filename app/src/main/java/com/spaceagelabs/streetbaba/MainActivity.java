@@ -4,20 +4,26 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.spaceagelabs.streetbaba.UI.SlidingTabLayout;
+import com.spaceagelabs.streetbaba.UI.adapters.ViewPagerAdapter;
+import com.spaceagelabs.streetbaba.UI.viewmodel.CartsViewModel;
 
-public class MainActivity extends ActionBarActivity {
+import java.util.ArrayList;
+
+public class MainActivity extends ActionBarActivity implements Tab2.OnCartsDataListener {
 // Declaring Your View and Variables
 
     Toolbar toolbar;
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    CharSequence Titles[] = {"Home", "FOOD"};
-    int Numboftabs = 2;
+    CharSequence Titles[] = {"Home", "FOOD","MAP"};
+    int Numboftabs = 3;
+    String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,5 +83,12 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onCartsDataReceived(ArrayList<CartsViewModel> cartsViewModels) {
+        Log.d(TAG, "data received to Activity... send to view pager");
+        adapter.onCartsDataReceived(cartsViewModels);
     }
 }

@@ -56,7 +56,6 @@ public class Tab1 extends Fragment implements HomeRVAdapter.RVClickListener {
         mRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         loginButton = (LoginButton) v.findViewById(R.id.login_button);
         setupBottomPanner(v);
-
         //currentUser.g
 
         return v;

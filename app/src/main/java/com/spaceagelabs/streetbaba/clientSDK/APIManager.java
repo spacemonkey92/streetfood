@@ -67,7 +67,7 @@ public class APIManager {
                         for (Cart cart : carts) {
                             int likes = cart.getLikesCount();
                             String rating =""+String.valueOf(likes)+" likes" ;
-                            final CartsViewModel mCart = new CartsViewModel(cart.getObjectId(), cart.getName(), cart.getAddress(), String.valueOf(cart.getReviewCount()), rating, cart.getImage());
+                            final CartsViewModel mCart = new CartsViewModel(cart.getObjectId(), cart.getName(), cart.getAddress(), String.valueOf(cart.getReviewCount()), rating, cart.getImage(),cart.getLocation());
                             allCarts.add(mCart);
                         }
                     }
@@ -310,7 +310,6 @@ public class APIManager {
                             /**
                              * successfully saved the cart.
                              */
-
                             ParseUser user = ParseUser.getCurrentUser();
                             int point =user.getInt("points");
                             Log.d(TAG,"current points are :" +String.valueOf(point));
