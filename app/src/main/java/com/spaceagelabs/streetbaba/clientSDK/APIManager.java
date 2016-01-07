@@ -81,6 +81,7 @@ public class APIManager {
     }
 
     public  void getCartDetails(String cartId,String userId, final OnComplete<CartsDetailsModel> onComplete){
+        Log.d(TAG,"cet cart details "+cartId+" "+userId);
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("cartId", cartId);
@@ -92,12 +93,9 @@ public class APIManager {
             public void done(ArrayList response, ParseException e) {
 
                 if(e==null){
-                    Log.d(TAG, "awesome , got it !" + response.get(0).toString());
-
                     ArrayList<Cart> carts = (ArrayList<Cart>) response.get(0);
                     Cart cart = carts.get(0);
                     Integer liked = (Integer) response.get(1);
-                    Log.d(TAG,"got liked :"+liked.toString());
                     boolean like;
                     if (liked == 1){
                         like= true;
@@ -109,6 +107,7 @@ public class APIManager {
 
                 }else{
                     Log.d(TAG, "oops !" + e.getMessage());
+                    onComplete.done(null,e);
                 }
             }
         });
@@ -294,7 +293,7 @@ public class APIManager {
         }
     }
 
-    public void submitCart(final Cart cart, final ParseFile parseImage, final OnComplete<Boolean> onComplete) {
+    public void submitCart(final Cart cart, final ParseFile parseImage, final OnComplete<String> onComplete) {
 
         parseImage.saveInBackground(new SaveCallback() {
             @Override
@@ -310,16 +309,17 @@ public class APIManager {
                             /**
                              * successfully saved the cart.
                              */
+                            String cartID = cart.getObjectId();
                             ParseUser user = ParseUser.getCurrentUser();
                             int point =user.getInt("points");
-                            Log.d(TAG,"current points are :" +String.valueOf(point));
-                            user.put("points",(point+10));
+                            user.put("points", (point + 10));
                             user.saveInBackground(); // can save in background, not sot so important.
-                            onComplete.done(true,e);
+                            onComplete.done(cartID, e);
+
                         }
                     });
                 }else{
-                    onComplete.done(false, e);
+                    onComplete.done(null, e);
                 }
             }
         });

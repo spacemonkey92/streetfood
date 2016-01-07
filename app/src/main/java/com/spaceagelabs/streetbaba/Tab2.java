@@ -91,6 +91,13 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
         return v;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG,"tab 2 activity result");
+        homeCardsData();
+    }
+
     public void homeCardsData() {
         double lat=0,lng=0;
         gpsTracker = new GPSTracker(getContext());
@@ -105,7 +112,6 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
             //TODO.
             // dialog to turn on GPS owner.
         }
-
         APIManager.getInstance().getCarts(lat, lng, new OnComplete<ArrayList<CartsViewModel>>() {
             @Override
             public void done(ArrayList<CartsViewModel> carts, Exception e) {
@@ -125,8 +131,6 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
                         Log.d(TAG, "data received to Tab 1, sending to activity..");
                         mOncarOnCartsDataListener.onCartsDataReceived(carts);
                     }
-
-
                 }
             }
         });

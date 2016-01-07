@@ -47,9 +47,8 @@ public class AddPhotoActivity extends AppCompatActivity {
     LoginButton loginButton;
     private static final String TAG = "AddCartActivity";
     private SlidingUpPanelLayout mLayout;
-    String lat,lng;
+    String lat, lng;
     GPSTracker gpsTracker;
-
 
 
     @Override
@@ -126,12 +125,11 @@ public class AddPhotoActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             Intent intent = new Intent(AddPhotoActivity.this, AddCartActivity.class);
             gpsTracker = new GPSTracker(AddPhotoActivity.this);
-            if (gpsTracker.getIsGPSTrackingEnabled())
-            {
-                Log.d(TAG,"started tracking...");
-                String lat =  String.valueOf(gpsTracker.getLatitude());
-                String lng=  String.valueOf(gpsTracker.getLongitude());
-                Log.d(TAG,"started tracking..."+lat+lng);
+            if (gpsTracker.getIsGPSTrackingEnabled()) {
+                Log.d(TAG, "started tracking...");
+                String lat = String.valueOf(gpsTracker.getLatitude());
+                String lng = String.valueOf(gpsTracker.getLongitude());
+                Log.d(TAG, "started tracking..." + lat + lng);
                 gpsTracker.stopUsingGPS();
                 intent.putExtra(ApplicationConstants.CAM_LAT, lat);
                 intent.putExtra(ApplicationConstants.CAM_LONG, lng);
@@ -140,20 +138,21 @@ public class AddPhotoActivity extends AppCompatActivity {
                 try {
                     intent.putExtra(ApplicationConstants.FROM_CAM, "true");
                     intent.putExtra(ApplicationConstants.IMG_BUNDLE, imageUri.toString());
-                    startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if (requestCode == SELECT_FILE) {
                 Uri selectedImageUri = data.getData();
                 intent.putExtra(ApplicationConstants.IMG_BUNDLE, selectedImageUri.toString());
-                startActivity(intent);
+
             }
+            finish();
+            startActivity(intent);
+
         }
     }
 
     public void locationManger() {
-
 
 
     }

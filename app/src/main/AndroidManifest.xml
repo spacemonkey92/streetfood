@@ -42,7 +42,8 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name=".AddCartActivity"
-            android:label="@string/title_activity_add_cart" >
+            android:label="@string/title_activity_add_cart"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -51,7 +52,8 @@
         </activity>
         <activity
             android:name=".AddPhotoActivity"
-            android:label="@string/title_activity_add_cart" >
+            android:label="@string/title_activity_add_cart"
+            >
         </activity>
 
         <activity

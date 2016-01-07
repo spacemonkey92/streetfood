@@ -49,6 +49,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <RelativeLayout
+            android:id="@+id/cart_details_full"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

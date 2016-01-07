@@ -62,6 +62,12 @@ public class CartDetailsActivity extends AppCompatActivity {
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         loadBackdrop();
@@ -85,7 +91,6 @@ public class CartDetailsActivity extends AppCompatActivity {
                 setDetailsLoading(false);
                 if (e == null) {
                     Cart cart = var1.getCart();
-
                     TextView cartName = (TextView) findViewById(R.id.cart_name_details_TV);
                     cartName.setText(cart.getName());
                     TextView likes = (TextView) findViewById(R.id.likes_TV);
@@ -159,6 +164,18 @@ public class CartDetailsActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "action bar clicked");
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            Log.d(TAG, "action bar clicked 1");
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public  void likePhoto(){
         if(APIManager.getInstance().isUserLoggedIn()){
             APIManager.getInstance().likeCart(cartID, userID, new OnComplete<Boolean>() {
@@ -203,7 +220,7 @@ public class CartDetailsActivity extends AppCompatActivity {
     }
 
     public void setDetailsLoading(boolean status){
-        View details= findViewById(R.id.cart_details);
+        View details= findViewById(R.id.cart_details_full);
         CircularProgressView progressView = (CircularProgressView) findViewById(R.id.progress_view);
         if(status){
             details.setVisibility(View.INVISIBLE);
@@ -235,6 +252,7 @@ public class CartDetailsActivity extends AppCompatActivity {
         String body = reviewBoodyET.getText().toString();
         if(body!=null){
             if(body.length()>0){
+                disableReviews(true);
                 if(APIManager.getInstance().isUserLoggedIn()){
                     APIManager.getInstance().reviewCart(cartID, userID, body, new OnComplete<Boolean>() {
                         @Override
@@ -242,8 +260,9 @@ public class CartDetailsActivity extends AppCompatActivity {
                             if(e==null){
                                 getCartReviews();
                                 //Disable Reviews
-                                disableReviews();
+
                             }else{
+                                disableReviews(false);
                                 Toast.makeText(CartDetailsActivity.this,"Sorry could not post your review, try again later !",Toast.LENGTH_LONG).show();
                             }
                         }
@@ -255,11 +274,18 @@ public class CartDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public void disableReviews(){
+    public void disableReviews(boolean state){
         LinearLayout reviewLayout = (LinearLayout) findViewById(R.id.review_post_ll);
-        if(reviewLayout!=null){
-            reviewLayout.setVisibility(View.INVISIBLE);
+        if(state){
+            if(reviewLayout!=null){
+                reviewLayout.setVisibility(View.INVISIBLE);
+            }
+        }else{
+            if(reviewLayout!=null){
+                reviewLayout.setVisibility(View.VISIBLE);
+            }
         }
+
     }
 
 

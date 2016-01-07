@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -83,10 +84,9 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         Float Latitude =  Float.parseFloat(getIntent().getExtras().getString(ApplicationConstants.CAM_LAT));
         Float Longitude= Float.parseFloat(getIntent().getExtras().getString(ApplicationConstants.CAM_LONG));
         if (Latitude!=null && Longitude !=null ){
-            Log.d(TAG,"got lat long" +String.valueOf(Latitude)+String.valueOf(Longitude));
             bounds = new LatLngBounds(new LatLng(Latitude, Longitude), new LatLng(Latitude, Longitude));
         }else{
-            Log.d(TAG,"using default lat long");
+            // Use default
             bounds = new LatLngBounds(new LatLng(1.3, 103.833333), new LatLng(1.3, 103.833333));
         }
         mAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, bounds, null);
@@ -99,7 +99,6 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==App.PARSE_FB) {
-            Log.d(TAG,"parse fb result");
             ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -109,7 +108,6 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "parse fb login from button");
                 facebookLogin();
             }
         });
@@ -279,18 +277,33 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
             cart.setLocation(geoPoint);
             cart.setCreatedBy(ParseUser.getCurrentUser());
             cart.setAbout(about);
-
-            APIManager.getInstance().submitCart(cart, parseImage, new OnComplete<Boolean>() {
+            APIManager.getInstance().submitCart(cart, parseImage, new OnComplete<String>() {
                 @Override
-                public void done(Boolean var1, Exception e) {
+                public void done(String cartId, Exception e) {
                     if(e==null){
                         Log.d(TAG,"success");
+                        navigateToNextScreen(cartId);
                     }else{
                         Log.d(TAG,"fail");
+                        Toast.makeText(AddCartActivity.this,"Failed to post! Try again.",Toast.LENGTH_SHORT).show();
                     }
                 }
             });
+        }else{
+            //// TODO: 8/1/16 validate the error.
+            Toast.makeText(this,"Please fill in all the details.",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void navigateToNextScreen(String cartID){
+        ImageView imageView = (ImageView) findViewById(R.id.selected_image);
+        Bitmap bm = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+        Intent i = new Intent(this,CartDetailsActivity.class);
+        if(bm!=null){
+            i.putExtra(ApplicationConstants.CART_IMG_BUNDLE, bm);
+            i.putExtra(ApplicationConstants.CART_ID_BUNDLE,cartID);
+        }
+        startActivity(i);
     }
 
     /**
@@ -340,7 +353,7 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         public void onResult(PlaceBuffer places) {
             if (!places.getStatus().isSuccess()) {
                 // Request did not complete successfully
-                Log.e(TAG, "Place query did not complete. Error: " + places.getStatus().toString());
+
                 places.release();
                 return;
             }
