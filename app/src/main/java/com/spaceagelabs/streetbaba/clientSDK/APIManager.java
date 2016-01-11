@@ -81,7 +81,7 @@ public class APIManager {
     }
 
     public  void getCartDetails(String cartId,String userId, final OnComplete<CartsDetailsModel> onComplete){
-        Log.d(TAG,"cet cart details "+cartId+" "+userId);
+        Log.d(TAG, "cet cart details " + cartId + " " + userId);
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("cartId", cartId);
@@ -173,8 +173,6 @@ public class APIManager {
         });
     }
 
-
-
     public  void dislikeCart(String cartId,String userId, final OnComplete<Boolean> onComplete){
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
@@ -198,6 +196,24 @@ public class APIManager {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("cartId", cartId);
+        ParseCloud.callFunctionInBackground("deleteCart", params, new FunctionCallback<String>() {
+            @Override
+            public void done(String aBoolean, ParseException e) {
+                if(e==null){
+                    Log.d(TAG, "awesome , Liked it!");
+                    onComplete.done(true,null);
+
+                }else{
+                    Log.d(TAG,"oops !"+e.getMessage());
+                }
+            }
+        });
+    }
+
+    public  void deleteReview(String reviewId, final OnComplete<Boolean> onComplete){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("version", API_VERSION);
+        params.put("cartId", reviewId);
         ParseCloud.callFunctionInBackground("deleteCart", params, new FunctionCallback<String>() {
             @Override
             public void done(String aBoolean, ParseException e) {
