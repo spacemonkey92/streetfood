@@ -43,11 +43,9 @@ public class CartsAdapter extends RecyclerView.Adapter<CartsAdapter.MyViewHolder
         return viewHolder;
     }
 
-
     @Override
     public void onViewAttachedToWindow(MyViewHolder holder) {
         Log.d(TAG,"view attached to window");
-
         super.onViewAttachedToWindow(holder);
     }
 
@@ -127,7 +125,6 @@ public class CartsAdapter extends RecyclerView.Adapter<CartsAdapter.MyViewHolder
             rating =(TextView) itemView.findViewById(R.id.rating);
             reviewCount =(TextView) itemView.findViewById(R.id.review_count);
             cell.setOnClickListener(this);
-
         }
 
         @Override

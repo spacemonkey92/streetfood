@@ -11,6 +11,7 @@ import com.spaceagelabs.streetbaba.clientSDK.model.Cart;
  */
 public class CartsDetailsModel {
 
+
     Cart cart;
     String createdBy;
     String createById;

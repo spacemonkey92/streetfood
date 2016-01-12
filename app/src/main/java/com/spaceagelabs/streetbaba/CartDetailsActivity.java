@@ -28,7 +28,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.parse.GetCallback;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.spaceagelabs.streetbaba.UI.ReviewsAdapter;
@@ -46,17 +48,17 @@ import java.util.Random;
 public class CartDetailsActivity extends AppCompatActivity {
 
     Menu menu;
-    public static final String TAG= "cartDetailsActivity";
-    boolean liked,ownCart;
-    String cartID,userID;
+    public static final String TAG = "cartDetailsActivity";
+    boolean liked, ownCart;
+    String cartID, userID;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart_detail);
-        liked=false;
+        liked = false;
         ParseUser user = ParseUser.getCurrentUser();
-        if(user!=null){
+        if (user != null) {
             userID = user.getObjectId();
         }
 
@@ -83,7 +85,7 @@ public class CartDetailsActivity extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
         Glide.with(this).load(byteArray).centerCrop().into(imageView);
-        cartID =  intent.getStringExtra(ApplicationConstants.CART_ID_BUNDLE);
+        cartID = intent.getStringExtra(ApplicationConstants.CART_ID_BUNDLE);
         setDetailsLoading(true);
         APIManager.getInstance().getCartDetails(cartID, userID, new OnComplete<CartsDetailsModel>() {
             @Override
@@ -93,8 +95,24 @@ public class CartDetailsActivity extends AppCompatActivity {
                     Cart cart = var1.getCart();
                     TextView cartName = (TextView) findViewById(R.id.cart_name_details_TV);
                     cartName.setText(cart.getName());
+
+                    /**
+                     * Setting Likes
+                     */
                     TextView likes = (TextView) findViewById(R.id.likes_TV);
-                    likes.setText(cart.getLikesCount() + " likes");
+                    int likeCount = cart.getLikesCount();
+                    String likesStr;
+                    if (likeCount == 1) {
+                        likesStr = " Like";
+                    } else {
+                        likesStr = " Likes";
+                    }
+                    likes.setText(likeCount + likesStr);
+
+                    /**
+                     * setting address and found By.
+                     */
+
                     TextView address = (TextView) findViewById(R.id.address_TV);
                     address.setText(cart.getAddress());
                     TextView fulAddress = (TextView) findViewById(R.id.full_address_TV);
@@ -108,6 +126,9 @@ public class CartDetailsActivity extends AppCompatActivity {
                         }
                     });
 
+                    /**
+                     * setting like button.
+                     */
                     TextView aboutCart = (TextView) findViewById(R.id.about_cart_TV);
                     aboutCart.setText(cart.getAbout());
 
@@ -118,6 +139,10 @@ public class CartDetailsActivity extends AppCompatActivity {
                         likeBtn.setImageResource(R.mipmap.ic_favorite_white_24px);
                         liked = false;
                     }
+
+                    /**
+                     * setting menu. If the users owns the cart then he can delete or else report.
+                     */
                     MenuItem menuItem = menu.findItem(R.id.action_settings);
                     if (cart.getCreatedBy().getObjectId().equals(userID)) {
                         menuItem.setTitle("Delete");
@@ -133,6 +158,22 @@ public class CartDetailsActivity extends AppCompatActivity {
                         menuItem.setTitle("Report");
                         ownCart = false;
                     }
+
+                    /**
+                     * Replace thumbnail with Large image
+                     */
+                    ParseFile fullImage = cart.getFullImage();
+                    if(fullImage!=null){
+                        fullImage.getDataInBackground(new GetDataCallback() {
+                            @Override
+                            public void done(byte[] imageBytes, ParseException e) {
+                                Glide.with(CartDetailsActivity.this).load(imageBytes).centerCrop().into(imageView);
+                            }
+                        });
+                    }
+
+
+
                 } else {
                     //TODO. handle error.
                 }
@@ -147,10 +188,12 @@ public class CartDetailsActivity extends AppCompatActivity {
                     likeBtn.setImageResource(R.mipmap.ic_favorite_pink_24px);
                     liked = true;
                     likePhoto();
+                    changeLikeCount(true);
                 } else {
                     likeBtn.setImageResource(R.mipmap.ic_favorite_white_24px);
                     liked = false;
                     dislikePhoto();
+                    changeLikeCount(false);
                 }
             }
         });
@@ -159,7 +202,7 @@ public class CartDetailsActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_cart_details, menu);
-        this.menu= menu;
+        this.menu = menu;
 
         return true;
     }
@@ -176,34 +219,34 @@ public class CartDetailsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public  void likePhoto(){
-        if(APIManager.getInstance().isUserLoggedIn()){
+    public void likePhoto() {
+        if (APIManager.getInstance().isUserLoggedIn()) {
             APIManager.getInstance().likeCart(cartID, userID, new OnComplete<Boolean>() {
                 @Override
                 public void done(Boolean var1, Exception e) {
                     //done
                 }
             });
-        }else{
+        } else {
             //TODO. handle anonymous users.
         }
     }
 
-    public  void dislikePhoto(){
-        if(APIManager.getInstance().isUserLoggedIn()){
+    public void dislikePhoto() {
+        if (APIManager.getInstance().isUserLoggedIn()) {
             APIManager.getInstance().dislikeCart(cartID, userID, new OnComplete<Boolean>() {
                 @Override
                 public void done(Boolean var1, Exception e) {
                     //done
                 }
             });
-        }else{
+        } else {
             //TODO. handle anonymous users.
         }
     }
 
-    public  void deleteCart(){
-        if(APIManager.getInstance().isUserLoggedIn()){
+    public void deleteCart() {
+        if (APIManager.getInstance().isUserLoggedIn()) {
             APIManager.getInstance().deleteCart(cartID, new OnComplete<Boolean>() {
                 @Override
                 public void done(Boolean var1, Exception e) {
@@ -214,33 +257,33 @@ public class CartDetailsActivity extends AppCompatActivity {
                     }
                 }
             });
-        }else{
+        } else {
             //TODO. handle anonymous users.
         }
     }
 
-    public void setDetailsLoading(boolean status){
-        View details= findViewById(R.id.cart_details_full);
+    public void setDetailsLoading(boolean status) {
+        View details = findViewById(R.id.cart_details_full);
         CircularProgressView progressView = (CircularProgressView) findViewById(R.id.progress_view);
-        if(status){
+        if (status) {
             details.setVisibility(View.INVISIBLE);
             progressView.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             details.setVisibility(View.VISIBLE);
             progressView.setVisibility(View.INVISIBLE);
         }
     }
 
-    public void getCartReviews(){
-        cartID =  getIntent().getStringExtra(ApplicationConstants.CART_ID_BUNDLE);
+    public void getCartReviews() {
+        cartID = getIntent().getStringExtra(ApplicationConstants.CART_ID_BUNDLE);
         APIManager.getInstance().getCartReview(cartID, new OnComplete<ArrayList<Review>>() {
             @Override
             public void done(ArrayList<Review> reviews, Exception e) {
-                if(e==null){
-                    Log.d(TAG,"displaying reviews");
+                if (e == null) {
+                    Log.d(TAG, "displaying reviews");
                     LinearLayout reviewLayout = (LinearLayout) findViewById(R.id.review_list);
                     LinearLayout postReviewLayout = (LinearLayout) findViewById(R.id.review_post_ll);
-                    ReviewsAdapter adapter = new ReviewsAdapter(getApplicationContext(),reviewLayout,reviews,userID,postReviewLayout);
+                    ReviewsAdapter adapter = new ReviewsAdapter(getApplicationContext(), reviewLayout, reviews, userID, postReviewLayout);
                     adapter.setupView();
                 }
             }
@@ -250,40 +293,62 @@ public class CartDetailsActivity extends AppCompatActivity {
     public void sendReview(View view) {
         EditText reviewBoodyET = (EditText) findViewById(R.id.review_ET);
         String body = reviewBoodyET.getText().toString();
-        if(body!=null){
-            if(body.length()>0){
+        if (body != null) {
+            if (body.length() > 0) {
                 disableReviews(true);
-                if(APIManager.getInstance().isUserLoggedIn()){
+                if (APIManager.getInstance().isUserLoggedIn()) {
                     APIManager.getInstance().reviewCart(cartID, userID, body, new OnComplete<Boolean>() {
                         @Override
                         public void done(Boolean var1, Exception e) {
-                            if(e==null){
+                            if (e == null) {
                                 getCartReviews();
                                 //Disable Reviews
 
-                            }else{
+                            } else {
                                 disableReviews(false);
-                                Toast.makeText(CartDetailsActivity.this,"Sorry could not post your review, try again later !",Toast.LENGTH_LONG).show();
+                                Toast.makeText(CartDetailsActivity.this, "Sorry could not post your review, try again later !", Toast.LENGTH_LONG).show();
                             }
                         }
                     });
-                }else{
+                } else {
                     // TODO: 22/12/15 manage login.
                 }
             }
         }
     }
 
-    public void disableReviews(boolean state){
+    public void disableReviews(boolean state) {
         LinearLayout reviewLayout = (LinearLayout) findViewById(R.id.review_post_ll);
-        if(state){
-            if(reviewLayout!=null){
+        if (state) {
+            if (reviewLayout != null) {
                 reviewLayout.setVisibility(View.INVISIBLE);
             }
-        }else{
-            if(reviewLayout!=null){
+        } else {
+            if (reviewLayout != null) {
                 reviewLayout.setVisibility(View.VISIBLE);
             }
+        }
+
+    }
+
+    public void changeLikeCount(boolean count) {
+        TextView likes = (TextView) findViewById(R.id.likes_TV);
+        String likeStr = likes.getText().toString();
+        if (likeStr != null) {
+            String likeCount = likeStr.split("\\s+")[0];
+            int cnt = Integer.valueOf(likeCount);
+            if (count) {
+                cnt++;
+            } else if (!count && (cnt != 0)) {
+                cnt--;
+            }
+            String likesStr;
+            if (cnt == 1) {
+                likesStr = " Like";
+            } else {
+                likesStr = " Likes";
+            }
+            likes.setText(cnt + likesStr);
         }
 
     }

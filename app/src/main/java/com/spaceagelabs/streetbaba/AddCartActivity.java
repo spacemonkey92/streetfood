@@ -62,6 +62,7 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
 
     //Parse
     ParseFile parseImage=null;
+    ParseFile largeParseImage=null;
     Cart cart = null;
     ParseGeoPoint geoPoint=null;
     String fullAddress = null;
@@ -182,15 +183,19 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
         cursor.moveToFirst();
         String selectedImagePath = cursor.getString(column_index);
+
+        /**
+         * load thumbnail image.
+         */
         Bitmap bm;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(selectedImagePath, options);
+
         final int REQUIRED_SIZE = 200;
+
         int scale = 1;
-        while (options.outWidth / scale / 2 >= REQUIRED_SIZE
-                && options.outHeight / scale / 2 >= REQUIRED_SIZE)
-            scale *= 2;
+        while (options.outWidth / scale / 2 >= REQUIRED_SIZE && options.outHeight / scale / 2 >= REQUIRED_SIZE) scale *= 2;
         options.inSampleSize = scale;
         options.inJustDecodeBounds = false;
         bm = BitmapFactory.decodeFile(selectedImagePath, options);
@@ -201,6 +206,30 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         byte[] byteArray = stream.toByteArray();
 
         parseImage = new ParseFile("omly.jpg", byteArray);
+
+        /**
+         * load large image
+         */
+
+        Bitmap largeBit;
+        BitmapFactory.Options largeOptions = new BitmapFactory.Options();
+        largeOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(selectedImagePath, largeOptions);
+
+        final int LARGE_SIZE = 600;
+
+        int largeScale = 1;
+        while (largeOptions.outWidth / largeScale/ 2 >= LARGE_SIZE && largeOptions.outHeight / largeScale/ 2 >= LARGE_SIZE) largeScale*= 2;
+        largeOptions.inSampleSize = largeScale;
+        largeOptions.inJustDecodeBounds = false;
+        largeBit = BitmapFactory.decodeFile(selectedImagePath, largeOptions);
+
+        ByteArrayOutputStream largeStream = new ByteArrayOutputStream();
+        largeBit.compress(Bitmap.CompressFormat.JPEG, 80, largeStream);
+        byte[] largeByteArray = largeStream.toByteArray();
+
+        largeParseImage = new ParseFile("omly.jpg", largeByteArray);
+
 
         /** try to get lat long **/
         try{
@@ -268,7 +297,7 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         String name = nameET.getText().toString();
         AppCompatEditText aboutET = (AppCompatEditText) findViewById(R.id.cart_des_ET);
         String about = aboutET.getText().toString();
-        if(parseImage!=null && fullAddress != null && name != null && geoPoint!=null && address != null && about!=null){
+        if(parseImage!=null && largeParseImage!=null && fullAddress != null && name != null && geoPoint!=null && address != null && about!=null){
 
             cart = new Cart();
             cart.setAddress(address);
@@ -277,7 +306,7 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
             cart.setLocation(geoPoint);
             cart.setCreatedBy(ParseUser.getCurrentUser());
             cart.setAbout(about);
-            APIManager.getInstance().submitCart(cart, parseImage, new OnComplete<String>() {
+            APIManager.getInstance().submitCart(cart, parseImage,largeParseImage, new OnComplete<String>() {
                 @Override
                 public void done(String cartId, Exception e) {
                     if(e==null){

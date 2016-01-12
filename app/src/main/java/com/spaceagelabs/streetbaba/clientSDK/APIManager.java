@@ -44,20 +44,20 @@ public class APIManager {
 
     private static final String TAG = "APIManager";
 
-    private static final APIManager instance= new APIManager();
+    private static final APIManager instance = new APIManager();
     private static final String API_VERSION = "1";
 
-    public static APIManager getInstance(){
+    public static APIManager getInstance() {
         return instance;
     }
 
-    public void getCarts( double lat,double lng,final OnComplete<ArrayList<CartsViewModel>> onComplete){
+    public void getCarts(final double lat, double lng, final OnComplete<ArrayList<CartsViewModel>> onComplete) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("range", 1);
         params.put("lat", lat);
         params.put("long", lng);
-        final ArrayList<CartsViewModel> allCarts=new ArrayList<>();;
+        final ArrayList<CartsViewModel> allCarts = new ArrayList<>();
         ParseCloud.callFunctionInBackground("getCarts", params, new FunctionCallback<List<Cart>>() {
 
             @Override
@@ -66,54 +66,61 @@ public class APIManager {
                     if (carts != null) {
                         for (Cart cart : carts) {
                             int likes = cart.getLikesCount();
-                            String rating =""+String.valueOf(likes)+" likes" ;
-                            final CartsViewModel mCart = new CartsViewModel(cart.getObjectId(), cart.getName(), cart.getAddress(), String.valueOf(cart.getReviewCount()), rating, cart.getImage(),cart.getLocation());
+                            String rating;
+                            if (likes == 1) {
+                                rating = "" + String.valueOf(likes) + " Like";
+                            } else {
+                                rating = "" + String.valueOf(likes) + " Likes";
+                            }
+
+                            final CartsViewModel mCart = new CartsViewModel(cart.getObjectId(), cart.getName(), cart.getAddress(), String.valueOf(cart.getReviewCount()), rating, cart.getImage(), cart.getLocation());
                             allCarts.add(mCart);
                         }
                     }
                 } else {
-                    Log.d(TAG,"error "+e.getMessage());
+                    Log.d(TAG, "error " + e.getMessage());
                     onComplete.done(null, e);
                 }
-                onComplete.done(allCarts,null);
+                onComplete.done(allCarts, null);
             }
         });
     }
 
-    public  void getCartDetails(String cartId,String userId, final OnComplete<CartsDetailsModel> onComplete){
+    public void getCartDetails(String cartId, String userId, final OnComplete<CartsDetailsModel> onComplete) {
         Log.d(TAG, "cet cart details " + cartId + " " + userId);
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("cartId", cartId);
         params.put("userId", userId);
 
-        final ArrayList<CartsViewModel> allCarts=new ArrayList<>();;
+        final ArrayList<CartsViewModel> allCarts = new ArrayList<>();
+        ;
         ParseCloud.callFunctionInBackground("getCartDetails", params, new FunctionCallback<ArrayList<Object>>() {
             @Override
             public void done(ArrayList response, ParseException e) {
 
-                if(e==null){
+                if (e == null) {
                     ArrayList<Cart> carts = (ArrayList<Cart>) response.get(0);
                     Cart cart = carts.get(0);
                     Integer liked = (Integer) response.get(1);
                     boolean like;
-                    if (liked == 1){
-                        like= true;
-                    }else{
+                    if (liked == 1) {
+                        like = true;
+                    } else {
                         like = false;
                     }
-                    CartsDetailsModel detailsModel = new CartsDetailsModel(cart,null,null,like);
-                    onComplete.done(detailsModel,null);
+                    CartsDetailsModel detailsModel = new CartsDetailsModel(cart, null, null, like);
+                    onComplete.done(detailsModel, null);
 
-                }else{
+                } else {
                     Log.d(TAG, "oops !" + e.getMessage());
-                    onComplete.done(null,e);
+                    onComplete.done(null, e);
                 }
             }
         });
     }
 
-    public void getCartReview(String cartId, final OnComplete<ArrayList<Review>> onComplete){
+    public void getCartReview(String cartId, final OnComplete<ArrayList<Review>> onComplete) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("cartId", cartId);
@@ -122,19 +129,19 @@ public class APIManager {
             @Override
             public void done(ArrayList<Review> response, ParseException e) {
 
-                if(e==null){
-                    Log.d(TAG,"gor review :"+response.toString());
-                    onComplete.done(response,null);
+                if (e == null) {
+                    Log.d(TAG, "gor review :" + response.toString());
+                    onComplete.done(response, null);
 
-                }else{
-                    Log.d(TAG,"failed getting reviews");
+                } else {
+                    Log.d(TAG, "failed getting reviews");
                     Log.d(TAG, "oops !" + e.getMessage());
                 }
             }
         });
     }
 
-    public  void likeCart(String cartId,String userId, final OnComplete<Boolean> onComplete){
+    public void likeCart(String cartId, String userId, final OnComplete<Boolean> onComplete) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("cartId", cartId);
@@ -142,18 +149,18 @@ public class APIManager {
         ParseCloud.callFunctionInBackground("likeCart", params, new FunctionCallback<String>() {
             @Override
             public void done(String aBoolean, ParseException e) {
-                if(e==null){
+                if (e == null) {
                     Log.d(TAG, "awesome , Liked it!");
-                    onComplete.done(true,null);
+                    onComplete.done(true, null);
 
-                }else{
-                    Log.d(TAG,"oops !"+e.getMessage());
+                } else {
+                    Log.d(TAG, "oops !" + e.getMessage());
                 }
             }
         });
     }
 
-    public  void reviewCart(String cartId,String userId,String body, final OnComplete<Boolean> onComplete){
+    public void reviewCart(String cartId, String userId, String body, final OnComplete<Boolean> onComplete) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("cartId", cartId);
@@ -162,18 +169,18 @@ public class APIManager {
         ParseCloud.callFunctionInBackground("postReview", params, new FunctionCallback<String>() {
             @Override
             public void done(String aBoolean, ParseException e) {
-                if(e==null){
+                if (e == null) {
                     Log.d(TAG, "posted review successfully");
-                    onComplete.done(true,null);
+                    onComplete.done(true, null);
 
-                }else{
-                    Log.d(TAG,"oops !"+e.getMessage());
+                } else {
+                    Log.d(TAG, "oops !" + e.getMessage());
                 }
             }
         });
     }
 
-    public  void dislikeCart(String cartId,String userId, final OnComplete<Boolean> onComplete){
+    public void dislikeCart(String cartId, String userId, final OnComplete<Boolean> onComplete) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("cartId", cartId);
@@ -181,48 +188,48 @@ public class APIManager {
         ParseCloud.callFunctionInBackground("dislikeCart", params, new FunctionCallback<String>() {
             @Override
             public void done(String aBoolean, ParseException e) {
-                if(e==null){
+                if (e == null) {
                     Log.d(TAG, "awesome , disliked it!");
-                    onComplete.done(true,null);
+                    onComplete.done(true, null);
 
-                }else{
-                    Log.d(TAG,"oops !"+e.getMessage());
+                } else {
+                    Log.d(TAG, "oops !" + e.getMessage());
                 }
             }
         });
     }
 
-    public  void deleteCart(String cartId, final OnComplete<Boolean> onComplete){
+    public void deleteCart(String cartId, final OnComplete<Boolean> onComplete) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("cartId", cartId);
         ParseCloud.callFunctionInBackground("deleteCart", params, new FunctionCallback<String>() {
             @Override
             public void done(String aBoolean, ParseException e) {
-                if(e==null){
+                if (e == null) {
                     Log.d(TAG, "awesome , Liked it!");
-                    onComplete.done(true,null);
+                    onComplete.done(true, null);
 
-                }else{
-                    Log.d(TAG,"oops !"+e.getMessage());
+                } else {
+                    Log.d(TAG, "oops !" + e.getMessage());
                 }
             }
         });
     }
 
-    public  void deleteReview(String reviewId, final OnComplete<Boolean> onComplete){
+    public void deleteReview(String reviewId, final OnComplete<Boolean> onComplete) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
         params.put("cartId", reviewId);
         ParseCloud.callFunctionInBackground("deleteCart", params, new FunctionCallback<String>() {
             @Override
             public void done(String aBoolean, ParseException e) {
-                if(e==null){
+                if (e == null) {
                     Log.d(TAG, "awesome , Liked it!");
-                    onComplete.done(true,null);
+                    onComplete.done(true, null);
 
-                }else{
-                    Log.d(TAG,"oops !"+e.getMessage());
+                } else {
+                    Log.d(TAG, "oops !" + e.getMessage());
                 }
             }
         });
@@ -256,9 +263,9 @@ public class APIManager {
                                 currentUser.saveInBackground(new SaveCallback() {
                                     @Override
                                     public void done(ParseException e) {
-                                        if(e==null){
+                                        if (e == null) {
 
-                                            onComplete.done("okay",null);
+                                            onComplete.done("okay", null);
                                         }
                                     }
                                 });
@@ -296,45 +303,54 @@ public class APIManager {
 
     }
 
-    public boolean isUserLoggedIn(){
+    public boolean isUserLoggedIn() {
         ParseUser currentUser = ParseUser.getCurrentUser();
         if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
-            Log.d(TAG,"user already exists ");
-            return  true;
+            Log.d(TAG, "user already exists ");
+            return true;
             //updateViewsWithProfileInfo();
-        }else{
-            Log.d(TAG,"no user exists ");
-            return  false;
+        } else {
+            Log.d(TAG, "no user exists ");
+            return false;
 
         }
     }
 
-    public void submitCart(final Cart cart, final ParseFile parseImage, final OnComplete<String> onComplete) {
+    public void submitCart(final Cart cart, final ParseFile parseImage,final ParseFile largeParseImage, final OnComplete<String> onComplete) {
 
         parseImage.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e==null){
+                if (e == null) {
                     /**
-                     * successfully saved picture.
+                     * successfully saved small picture.
                      */
-                    cart.setImage(parseImage);
-                    cart.saveInBackground(new SaveCallback() {
+                    largeParseImage.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
                             /**
-                             * successfully saved the cart.
+                             * successfully saved large picture
                              */
-                            String cartID = cart.getObjectId();
-                            ParseUser user = ParseUser.getCurrentUser();
-                            int point =user.getInt("points");
-                            user.put("points", (point + 10));
-                            user.saveInBackground(); // can save in background, not sot so important.
-                            onComplete.done(cartID, e);
-
+                            cart.setFullImage(largeParseImage);
+                            cart.setImage(parseImage);
+                            cart.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    /**
+                                     * successfully saved the cart.
+                                     */
+                                    String cartID = cart.getObjectId();
+                                    ParseUser user = ParseUser.getCurrentUser();
+                                    int point = user.getInt("points");
+                                    user.put("points", (point + 10));
+                                    user.saveInBackground(); // can save in background, not sot so important.
+                                    onComplete.done(cartID, e);
+                                }
+                            });
                         }
                     });
-                }else{
+
+                } else {
                     onComplete.done(null, e);
                 }
             }

@@ -12,15 +12,20 @@
         android:layout_height="match_parent" />
 
     <include
-
         android:layout_marginTop="@dimen/s_margin"
         android:layout_alignParentBottom="true"
         android:id="@+id/cart_details_map"
         layout="@layout/cart_cell"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
-
-
-
-
+    <TextView
+        android:id="@+id/map_text"
+        android:text="Please select A Place"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="47dp"
+        android:layout_marginStart="47dp" />
 </RelativeLayout>

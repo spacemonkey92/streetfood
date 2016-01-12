@@ -59,12 +59,14 @@ public class Tab3 extends Fragment implements Tab2.OnCartsDataListener, GoogleMa
         mMapView = (MapView) v.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         processMaps();
+
         return v;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        setTipsDisplay(true);
         if(!mapsPloted){
             processMaps();
         }
@@ -96,7 +98,7 @@ public class Tab3 extends Fragment implements Tab2.OnCartsDataListener, GoogleMa
 
 
     public void processMaps() {
-        Log.d(TAG,"processing maps");
+        Log.d(TAG, "processing maps");
 
         if (mMapView != null) {
             mMapView.onResume();// needed to get the map to display immediately
@@ -157,7 +159,8 @@ public class Tab3 extends Fragment implements Tab2.OnCartsDataListener, GoogleMa
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Log.d(TAG,"marker clicked");
+
+
         View v = getView();
         TextView cartName;
         TextView cartAddress;
@@ -174,6 +177,7 @@ public class Tab3 extends Fragment implements Tab2.OnCartsDataListener, GoogleMa
         }
 
         if (currentData!= null && v != null) {
+            setTipsDisplay(false);
             final ImageView cartImage = (ImageView) v.findViewById(R.id.cart_image);
             cartName = (TextView) v.findViewById(R.id.cart_name_TV);
             cartAddress = (TextView) v.findViewById(R.id.cart_address_TV);
@@ -222,5 +226,20 @@ public class Tab3 extends Fragment implements Tab2.OnCartsDataListener, GoogleMa
             });
         }
         return false;
+    }
+
+    public void setTipsDisplay(boolean status){
+        Log.d(TAG,"marker clicked");
+
+        View view = getView().findViewById(R.id.cart_details_map);
+        TextView textView = (TextView) getView().findViewById(R.id.map_text);
+
+        if(status){
+            view.setVisibility(View.INVISIBLE);
+            textView.setVisibility(View.VISIBLE);
+        }else{
+            view.setVisibility(View.VISIBLE);
+            textView.setVisibility(View.INVISIBLE);
+        }
     }
 }

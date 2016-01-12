@@ -93,6 +93,14 @@ public class Cart extends ParseObject {
         put("image",value);
     }
 
+    public ParseFile getFullImage(){
+        return getParseFile("full_image");
+    }
+
+    public void setFullImage(ParseFile value){
+        put("full_image",value);
+    }
+
     public static ParseQuery<Cart> getQuery() {
         return ParseQuery.getQuery(Cart.class);
     }

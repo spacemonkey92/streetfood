@@ -117,10 +117,8 @@
                 android:clickable="false"
                 card_view:cardBackgroundColor="@color/accentColor"
                 android:layout_alignParentBottom="true"
-                android:layout_marginLeft="3dp"
-                android:layout_marginBottom="3dp"
-                card_view:cardCornerRadius="5dp"
-                card_view:cardElevation="3dp">
+                card_view:cardCornerRadius="3dp"
+                card_view:cardElevation="0.5dp">
 
                 <TextView
                     android:id="@+id/rating"
