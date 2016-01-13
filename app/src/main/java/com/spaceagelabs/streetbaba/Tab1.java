@@ -98,6 +98,13 @@ public class Tab1 extends Fragment implements HomeRVAdapter.RVClickListener {
                 mLayout.setAnchorPoint(0.5f);
                 mLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
             }
+        }else if (position==2){
+            if(isUserLoggedIn()){
+                proceedToProfile();
+            }else{
+                mLayout.setAnchorPoint(0.5f);
+                mLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+            }
         }
     }
 
@@ -259,6 +266,11 @@ public class Tab1 extends Fragment implements HomeRVAdapter.RVClickListener {
 
     public void proceedToAdd(){
         Intent intent = new Intent(getActivity(),AddPhotoActivity.class);
+        startActivity(intent);
+    }
+
+    public void proceedToProfile(){
+        Intent intent = new Intent(getActivity(),ProfileActivity.class);
         startActivity(intent);
     }
 

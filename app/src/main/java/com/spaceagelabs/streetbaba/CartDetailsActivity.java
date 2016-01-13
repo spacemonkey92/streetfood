@@ -1,10 +1,12 @@
 package com.spaceagelabs.streetbaba;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -45,12 +47,12 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class CartDetailsActivity extends AppCompatActivity {
+public class CartDetailsActivity extends AppCompatActivity implements View.OnLongClickListener {
 
     Menu menu;
     public static final String TAG = "cartDetailsActivity";
     boolean liked, ownCart;
-    String cartID, userID;
+    String cartID, userID, ownReview;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,11 +104,9 @@ public class CartDetailsActivity extends AppCompatActivity {
                     TextView likes = (TextView) findViewById(R.id.likes_TV);
                     int likeCount = cart.getLikesCount();
                     String likesStr;
-                    if (likeCount == 1) {
-                        likesStr = " Like";
-                    } else {
-                        likesStr = " Likes";
-                    }
+                    if (likeCount == 1) likesStr = " Like";
+                    else likesStr = " Likes";
+
                     likes.setText(likeCount + likesStr);
 
                     /**
@@ -163,7 +163,7 @@ public class CartDetailsActivity extends AppCompatActivity {
                      * Replace thumbnail with Large image
                      */
                     ParseFile fullImage = cart.getFullImage();
-                    if(fullImage!=null){
+                    if (fullImage != null) {
                         fullImage.getDataInBackground(new GetDataCallback() {
                             @Override
                             public void done(byte[] imageBytes, ParseException e) {
@@ -171,7 +171,6 @@ public class CartDetailsActivity extends AppCompatActivity {
                             }
                         });
                     }
-
 
 
                 } else {
@@ -283,8 +282,8 @@ public class CartDetailsActivity extends AppCompatActivity {
                     Log.d(TAG, "displaying reviews");
                     LinearLayout reviewLayout = (LinearLayout) findViewById(R.id.review_list);
                     LinearLayout postReviewLayout = (LinearLayout) findViewById(R.id.review_post_ll);
-                    ReviewsAdapter adapter = new ReviewsAdapter(getApplicationContext(), reviewLayout, reviews, userID, postReviewLayout);
-                    adapter.setupView();
+                    ReviewsAdapter adapter = new ReviewsAdapter(getApplicationContext(), reviewLayout, reviews, userID, postReviewLayout,CartDetailsActivity.this);
+                    ownReview = adapter.setupView();
                 }
             }
         });
@@ -303,8 +302,7 @@ public class CartDetailsActivity extends AppCompatActivity {
                             if (e == null) {
                                 getCartReviews();
                                 //Disable Reviews
-
-                            } else {
+                            }else{
                                 disableReviews(false);
                                 Toast.makeText(CartDetailsActivity.this, "Sorry could not post your review, try again later !", Toast.LENGTH_LONG).show();
                             }
@@ -354,4 +352,33 @@ public class CartDetailsActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public boolean onLongClick(View view) {
+        if(ownReview !=null){
+            Log.d(TAG, "on long click" + ownReview);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppTheme);
+            builder.setTitle("Delete Review");
+            builder.setMessage("Are you sure you want to delete this review ?");
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    APIManager.getInstance().deleteReview(ownReview, new OnComplete<Boolean>() {
+                        @Override
+                        public void done(Boolean var1, Exception e) {
+                            if (e == null) {
+                                Toast.makeText(CartDetailsActivity.this, "Successfully deleted your review.", Toast.LENGTH_SHORT).show();
+                                getCartReviews();
+                            } else {
+                                Toast.makeText(CartDetailsActivity.this, "Failed to deleted your review, try again.", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
+            });
+            builder.setNegativeButton("CANCEL", null);
+            builder.show();
+        }
+        return true;
+
+    }
 }

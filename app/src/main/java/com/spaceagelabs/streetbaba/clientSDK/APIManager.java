@@ -220,8 +220,8 @@ public class APIManager {
     public void deleteReview(String reviewId, final OnComplete<Boolean> onComplete) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("version", API_VERSION);
-        params.put("cartId", reviewId);
-        ParseCloud.callFunctionInBackground("deleteCart", params, new FunctionCallback<String>() {
+        params.put("reviewId", reviewId);
+        ParseCloud.callFunctionInBackground("deleteReview", params, new FunctionCallback<String>() {
             @Override
             public void done(String aBoolean, ParseException e) {
                 if (e == null) {
@@ -230,6 +230,7 @@ public class APIManager {
 
                 } else {
                     Log.d(TAG, "oops !" + e.getMessage());
+                    onComplete.done(false, e);
                 }
             }
         });
