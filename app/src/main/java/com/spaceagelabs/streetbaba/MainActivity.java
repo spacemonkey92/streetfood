@@ -11,10 +11,11 @@ import android.view.MenuItem;
 import com.spaceagelabs.streetbaba.UI.SlidingTabLayout;
 import com.spaceagelabs.streetbaba.UI.adapters.ViewPagerAdapter;
 import com.spaceagelabs.streetbaba.UI.viewmodel.CartsViewModel;
+import com.spaceagelabs.streetbaba.clientSDK.OnTabSwipeListner;
 
 import java.util.ArrayList;
 
-public class MainActivity extends ActionBarActivity implements Tab2.OnCartsDataListener {
+public class MainActivity extends ActionBarActivity implements Tab2.OnCartsDataListener, OnTabSwipeListner {
 // Declaring Your View and Variables
 
     Toolbar toolbar;
@@ -90,5 +91,23 @@ public class MainActivity extends ActionBarActivity implements Tab2.OnCartsDataL
     public void onCartsDataReceived(ArrayList<CartsViewModel> cartsViewModels) {
         Log.d(TAG, "data received to Activity... send to view pager");
         adapter.onCartsDataReceived(cartsViewModels);
+    }
+
+    @Override
+    public void swipeTap(int position) {
+        pager.setCurrentItem(position);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(pager!=null){
+            if(pager.getCurrentItem()!=0){
+                pager.setCurrentItem(0);
+            }else{
+                finish();
+            }
+        }else{
+            finish();
+        }
     }
 }

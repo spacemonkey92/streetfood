@@ -8,78 +8,84 @@
     tools:context="com.spaceagelabs.streetbaba.ProfileActivity"
     tools:showIn="@layout/activity_profile">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        app:civ_border_width="2dp"
-        android:id="@+id/dp_image"
-        app:civ_border_color="@color/lightPrimaryColor"
-        android:layout_width="@dimen/pic_width"
-        android:layout_height="@dimen/pic_height"
-        android:src="@mipmap/ic_walter_w_cc"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/m_margin"/>
-    <android.support.v7.widget.AppCompatTextView
-        android:layout_marginTop="@dimen/s_margin"
-        android:layout_below="@+id/dp_image"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/profile_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="17sp"
-        android:text="Nitin Muthyala"/>
-    <RelativeLayout
-        android:id="@+id/points_layout"
-        android:foregroundGravity="bottom"
-        android:layout_marginTop="@dimen/m_padding"
-        android:layout_below="@+id/profile_name"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/points_textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/secondaryTextColor"
-            android:textSize="19sp"
-            android:text="327"/>
-
-        <android.support.v7.widget.AppCompatTextView
-            android:foregroundGravity="bottom"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Points"
-            android:paddingLeft="@dimen/m_padding"
-            android:layout_alignBaseline="@+id/points_textView"
-            android:layout_alignBottom="@+id/points_textView"
-            android:layout_toRightOf="@+id/points_textView"
-            android:textColor="@color/dividerColor"
-            />
-    </RelativeLayout>
-
-    <View
-        android:id="@+id/divier"
-        android:layout_marginTop="@dimen/m_margin"
-        android:layout_below="@+id/points_layout"
-        android:background="@color/dividerColor"
-        android:layout_width="match_parent"
-        android:layout_height="0.3dp"></View>
 
 
-    <com.spaceagelabs.streetbaba.UI.SlidingTabLayout
-        android:layout_below="@+id/divier"
-        android:id="@+id/profile_tabs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="2dp"
-        android:background="@color/dividerColor"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/profile_viewPager"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_alignTop="@+id/divier">
-    </android.support.v4.view.ViewPager>
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/dp_image"
+                android:layout_width="@dimen/pic_width"
+                android:layout_height="@dimen/pic_height"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="@dimen/s_margin"
+                android:layout_marginBottom="@dimen/s_margin"
+                android:src="@mipmap/ic_walter_w_cc"
+                app:civ_border_color="@color/lightPrimaryColor"
+                app:civ_border_width="2dp" />
+
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_marginTop="@dimen/l_margin"
+                android:id="@+id/profile_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/s_margin"
+                android:layout_alignBaseline="@+id/dp_image"
+                android:text="--"
+                android:textSize="17sp"
+                android:layout_toRightOf="@+id/dp_image"
+                android:layout_toEndOf="@+id/dp_image" />
+
+            <RelativeLayout
+                android:id="@+id/points_layout"
+                android:paddingLeft="@dimen/s_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:foregroundGravity="bottom"
+                android:layout_below="@+id/profile_name"
+                android:layout_toRightOf="@+id/dp_image"
+                android:layout_toEndOf="@+id/dp_image">
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:id="@+id/points_textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--"
+                    android:textColor="@color/secondaryTextColor"
+                    android:textSize="19sp" />
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/points_textView"
+                    android:layout_alignBottom="@+id/points_textView"
+                    android:layout_toRightOf="@+id/points_textView"
+                    android:foregroundGravity="bottom"
+                    android:paddingLeft="@dimen/m_padding"
+                    android:text="Points"
+                    android:textColor="@color/dividerColor" />
+            </RelativeLayout>
+
+
+            <com.spaceagelabs.streetbaba.UI.SlidingTabLayout
+                android:id="@+id/profile_tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dp_image"
+                android:background="@color/dividerColor"
+                android:elevation="0.2dp" />
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/profile_viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/profile_tabs">
+            </android.support.v4.view.ViewPager>
+
+        </RelativeLayout>
+
 
 </RelativeLayout>

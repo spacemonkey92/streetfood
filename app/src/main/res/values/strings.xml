@@ -7,11 +7,10 @@
 
     <dimen name="detail_backdrop_height">350dp</dimen>
     <dimen name="card_margin">16dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
     <dimen name="list_item_avatar_size">40dp</dimen>
 
     <!--Home page -->
-    <string name="share">Share</string>
+    <string name="share">Add Street Food</string>
     <string name="share_sub">Are you a Street Food lover? Share your favourite Street food with us.</string>
     <string name="leader">Leaders</string>
     <string name="leader_sub">Look who is the leading Street foodie.</string>
@@ -26,24 +25,35 @@
     <!-- Add cart-->
     <string name="camera">CAMERA</string>
     <string name="gallery">GALLERY</string>
-    <string name="cart_name">Name</string>
+    <string name="cart_name">Name the food</string>
     <string name="cart_name_hint">Name The Food Spot You Discovered</string>
     <string name="cart_location">Location</string>
     <string name="cart_description">About the food</string>
     <string name="cart_description_hint">Tell the world whats awesome about your food discovery, what to eat and what not to. A brief description of the location. </string>
     <string name="cart_post">POST</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_profile">Profile</string>
+
+    <!-- Error messages-->
+    <string name="connection_error">Connection error, try again.</string>
+    <string name="get_picture_error">Error while retrieving the picture, try again.</string>
+    <string name="liked_success">Post liked and added to your profile.</string>
+    <string name="please_wait">What\'s the hurry?</string>
+    <string name="please_login">You must login first to perform this action.</string>
+
+    <string name="report_cart">Thank you for reporting this post. Omly Team will look into it.</string>
+
+    <string name="no_carts_found">No street food found in your area. Be the first to post.</string>
+    <string name="no_carts_found_toast">Click on this " + " button to post --> </string>
+
+    <string name="click_marker">Please click on the marker.</string>
 
     <!--&lt;!&ndash; Applications keys&ndash;&gt;-->
     <!--<string name="facebook_app_id">Enter your key</string>-->
-
-
     <!--<string name="parse_app_id">Enter your key</string>-->
-
     <!--<string name="parse_client_key">Enter your key</string>-->
-
-
     <!--<string name="google_places_API_key">Enter your key</string>-->
+    <!--  <string name="fabric_API_key">d568b592e429f063cf67ad287f7d23a25163e50c</string>-->
 
 
 

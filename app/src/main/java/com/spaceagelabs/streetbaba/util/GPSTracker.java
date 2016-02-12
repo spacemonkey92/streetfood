@@ -23,6 +23,8 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.spaceagelabs.streetbaba.R;
+
 /**
  * Create this Class from tutorial :
  * http://www.androidhive.info/2012/07/android-gps-location-manager-tutorial
@@ -193,38 +195,38 @@ public class GPSTracker extends Service implements LocationListener {
     /**
      * Function to show settings alert dialog
      */
-//    public void showSettingsAlert() {
-//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
-//
-//        //Setting Dialog Title
-//        alertDialog.setTitle(R.string.GPSAlertDialogTitle);
-//
-//        //Setting Dialog Message
-//        alertDialog.setMessage(R.string.GPSAlertDialogMessage);
-//
-//        //On Pressing Setting button
-//        alertDialog.setPositiveButton(R.string.action_settings, new DialogInterface.OnClickListener() {
-//
-//            @Override
-//            public void onClick(DialogInterface dialog, int which)
-//            {
-//                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                mContext.startActivity(intent);
-//            }
-//        });
-//
-//        //On pressing cancel button
-//        alertDialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//
-//            @Override
-//            public void onClick(DialogInterface dialog, int which)
-//            {
-//                dialog.cancel();
-//            }
-//        });
-//
-//        alertDialog.show();
-//    }
+    public void showSettingsAlert() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+
+        //Setting Dialog Title
+        alertDialog.setTitle("Turn on location");
+
+        //Setting Dialog Message
+        alertDialog.setMessage("To find the best food for you please switch on GPS");
+
+        //On Pressing Setting button
+        alertDialog.setPositiveButton(R.string.action_settings, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                mContext.startActivity(intent);
+            }
+        });
+
+        //On pressing cancel button
+        alertDialog.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.cancel();
+            }
+        });
+
+        alertDialog.show();
+    }
 
     /**
      * Get list of address by latitude and longitude
@@ -279,7 +281,6 @@ public class GPSTracker extends Service implements LocationListener {
         if (addresses != null && addresses.size() > 0) {
             Address address = addresses.get(0);
             String locality = address.getLocality();
-
             return locality;
         }
         else {

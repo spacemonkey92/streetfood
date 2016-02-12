@@ -8,6 +8,7 @@ public class ApplicationConstants {
     public static final String IMG_BUNDLE= "cart_pic";
     public static final String CART_IMG_BUNDLE= "cart_pic_2";
     public static final String CART_ID_BUNDLE= "cart_id";
+    public static final String USER_ID_BUNDLE= "user_id";
     public static final String CAM_LAT= "LAT";
     public static final String CAM_LONG= "LONG";
     public static final String FROM_CAM= "FROM_CAM";

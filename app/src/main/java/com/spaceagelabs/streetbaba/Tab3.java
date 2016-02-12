@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -109,9 +110,8 @@ public class Tab3 extends Fragment implements Tab2.OnCartsDataListener, GoogleMa
             }
             googleMap = mMapView.getMap();
             googleMap.setOnMarkerClickListener(this);
-            googleMap.setMyLocationEnabled(true);
+//            googleMap.setMyLocationEnabled(true); this is draining my batter. thus removed.
 
-            
             double firstLatitude = 0;
             double firstLongitude = 0;
             gpsTracker = new GPSTracker(getContext());
@@ -123,8 +123,9 @@ public class Tab3 extends Fragment implements Tab2.OnCartsDataListener, GoogleMa
                 gpsTracker = null;
 
             } else {
-                //TODO.
+
                 // dialog to turn on GPS owner.
+                gpsTracker.showSettingsAlert();
             }
 
             Log.d(TAG,"adding markers");
@@ -167,7 +168,7 @@ public class Tab3 extends Fragment implements Tab2.OnCartsDataListener, GoogleMa
         TextView rating;
         TextView reviewCount;
         if(cartsMap==null){
-            Log.d(TAG,"models null");
+            Log.d(TAG, "models null");
         }
         Log.d(TAG,"marker id clicked is "+marker.getId());
 
@@ -229,11 +230,10 @@ public class Tab3 extends Fragment implements Tab2.OnCartsDataListener, GoogleMa
     }
 
     public void setTipsDisplay(boolean status){
-        Log.d(TAG,"marker clicked");
 
+        Log.d(TAG,"marker clicked");
         View view = getView().findViewById(R.id.cart_details_map);
         TextView textView = (TextView) getView().findViewById(R.id.map_text);
-
         if(status){
             view.setVisibility(View.INVISIBLE);
             textView.setVisibility(View.VISIBLE);
@@ -242,4 +242,5 @@ public class Tab3 extends Fragment implements Tab2.OnCartsDataListener, GoogleMa
             textView.setVisibility(View.INVISIBLE);
         }
     }
+
 }

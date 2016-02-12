@@ -31,6 +31,9 @@
     <dimen name="cart_pic_height">70dp</dimen>
     <dimen name="cart_pic_width">70dp</dimen>
 
+    <dimen name="leader_pic_height">50dp</dimen>
+    <dimen name="leader_pic_width">50dp</dimen>
+
     <dimen name="review_pic_height">36dp</dimen>
     <dimen name="review_pic_width">36dp</dimen>
 
@@ -38,6 +41,7 @@
     <dimen name="review_width">48dp</dimen>
 
 
+    <dimen name="tab_height">40dp</dimen>
 
     <!-- picture-->
     <dimen name="pic_height">90dp</dimen>
@@ -46,7 +50,7 @@
     <!-- icon-->
     <dimen name="icon_height">30dp</dimen>
     <dimen name="icon_width">30dp</dimen>
-
+    <dimen name="fab_margin">16dp</dimen>
 
 
 </resources>

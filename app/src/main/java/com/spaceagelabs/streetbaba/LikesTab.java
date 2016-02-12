@@ -15,10 +15,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.melnykov.fab.FloatingActionButton;
 import com.melnykov.fab.ScrollDirectionListener;
+import com.parse.ParseUser;
 import com.spaceagelabs.streetbaba.UI.DividerItemDecoration;
 import com.spaceagelabs.streetbaba.UI.adapters.CartsAdapter;
 import com.spaceagelabs.streetbaba.UI.viewmodel.CartsViewModel;
@@ -38,51 +40,23 @@ public class LikesTab extends Fragment implements CartsAdapter.RVClickListener {
     private RecyclerView mRecycler;
     private CartsAdapter mRVAdapter;
     private View mView;
-    private final static String TAG = "ViewCartsTab";
-    GPSTracker gpsTracker;
+    private final static String TAG = "LikesTab";
     List<CartsViewModel> allCarts;
-    OnCartsDataListener mOncarOnCartsDataListener;
+    String userId;
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mOncarOnCartsDataListener = (OnCartsDataListener)activity;
-        }catch (ClassCastException e){
 
-        }
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.tab_2, container, false);
+        View v = inflater.inflate(R.layout.profile_tab, container, false);
         mView = v;
         mRecycler = (RecyclerView) mView.findViewById(R.id.carts_recycle_view);
         allCarts = new ArrayList<>();
-
-        final FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.fab);
-        fab.attachToRecyclerView(mRecycler, new ScrollDirectionListener() {
-            @Override
-            public void onScrollDown() {
-                fab.show();
-            }
-
-            @Override
-            public void onScrollUp() {
-                fab.hide();
-            }
-        });
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(getActivity(), AddPhotoActivity.class);
-                startActivity(i);
-            }
-        });
-
         CircularProgressView progressView = (CircularProgressView) v.findViewById(R.id.progress_view);
         progressView.startAnimation();
+        Intent i = getActivity().getIntent();
+        userId = i.getStringExtra(ApplicationConstants.USER_ID_BUNDLE);
+        Log.d(TAG,"user id in the tabs is :"+userId);
         homeCardsData();
         return v;
     }
@@ -95,41 +69,30 @@ public class LikesTab extends Fragment implements CartsAdapter.RVClickListener {
     }
 
     public void homeCardsData() {
-        double lat=0,lng=0;
-        gpsTracker = new GPSTracker(getContext());
-        if (gpsTracker.getIsGPSTrackingEnabled()) {
-            gpsTracker.getLocation();
-            lat = gpsTracker.getLatitude();
-            lng= gpsTracker.getLongitude();
-            gpsTracker.stopUsingGPS();
-            gpsTracker = null;
+        if(userId!=null){
 
-        } else {
-            //TODO.
-            // dialog to turn on GPS owner.
-        }
-        APIManager.getInstance().getCarts(lat, lng, new OnComplete<ArrayList<CartsViewModel>>() {
-            @Override
-            public void done(ArrayList<CartsViewModel> carts, Exception e) {
-                CircularProgressView progressView = (CircularProgressView) mView.findViewById(R.id.progress_view);
-                progressView.setVisibility(View.INVISIBLE);
-                if(e==null){
-                    allCarts= carts;
-                    Log.d(TAG,"got from API manager");
-                    mRVAdapter = new CartsAdapter(getActivity(), carts);
-                    mRVAdapter.setClickListener(LikesTab.this);
-                    mRecycler.addItemDecoration(new DividerItemDecoration(getActivity(), R.drawable.line_divider));
-                    mRecycler.setAdapter(mRVAdapter);
-                    mRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+            APIManager.getInstance().getLikedCartsByUser(userId, new OnComplete<ArrayList<CartsViewModel>>() {
+                @Override
+                public void done(ArrayList<CartsViewModel> carts, Exception e) {
+                    CircularProgressView progressView = (CircularProgressView) mView.findViewById(R.id.progress_view);
+                    progressView.setVisibility(View.INVISIBLE);
+                    if(e==null){
+                        allCarts= carts;
+                        Log.d(TAG,"got from API manager");
+                        mRVAdapter = new CartsAdapter(getActivity(), carts);
+                        mRVAdapter.setClickListener(LikesTab.this);
+                        mRecycler.addItemDecoration(new DividerItemDecoration(getActivity(), R.drawable.line_divider));
+                        mRecycler.setAdapter(mRVAdapter);
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+                        mRecycler.setLayoutManager(layoutManager);
+                    }else{
 
-                    //now send the data to the activity, to mark the map;
-                    if(mOncarOnCartsDataListener!=null){
-                        Log.d(TAG, "data received to Tab 1, sending to activity..");
-                        mOncarOnCartsDataListener.onCartsDataReceived(carts);
+                        Toast.makeText(getContext(), getResources().getString(R.string.connection_error), Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
-        });
+            });
+
+        }
     }
 
     @Override
@@ -145,13 +108,6 @@ public class LikesTab extends Fragment implements CartsAdapter.RVClickListener {
             i.putExtra(ApplicationConstants.CART_ID_BUNDLE,cart.getId());
         }
         startActivity(i);
-
-    }
-
-    public interface OnCartsDataListener {
-
-        public void onCartsDataReceived(ArrayList<CartsViewModel> cartsViewModels);
-
     }
 
 

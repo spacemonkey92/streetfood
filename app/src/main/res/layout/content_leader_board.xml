@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.spaceagelabs.streetbaba.LeaderBoardActivity"
+    tools:showIn="@layout/activity_leader_board">
+
+    <ImageView
+        android:layout_marginTop="@dimen/m_margin"
+        android:id="@+id/trophy_pic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/ic_trophy_black_36dp"/>
+
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_below="@+id/trophy_pic"
+        android:id="@+id/trophy_pic_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Top Street Foodies "
+        android:layout_marginBottom="@dimen/s_margin"
+        android:textSize="17sp" />
+
+ <android.support.v7.widget.RecyclerView
+     android:layout_below="@+id/trophy_pic_title"
+     android:id="@+id/leaders_recycle_view"
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content">
+
+ </android.support.v7.widget.RecyclerView>
+
+</RelativeLayout>

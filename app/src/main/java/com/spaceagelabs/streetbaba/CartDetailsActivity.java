@@ -51,14 +51,15 @@ public class CartDetailsActivity extends AppCompatActivity implements View.OnLon
 
     Menu menu;
     public static final String TAG = "cartDetailsActivity";
-    boolean liked, ownCart;
-    String cartID, userID, ownReview;
+    boolean liked, ownCart,didFinishLoading;
+    String cartID, userID, ownReview,ownerID;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart_detail);
         liked = false;
+        didFinishLoading=false;
         ParseUser user = ParseUser.getCurrentUser();
         if (user != null) {
             userID = user.getObjectId();
@@ -94,6 +95,7 @@ public class CartDetailsActivity extends AppCompatActivity implements View.OnLon
             public void done(CartsDetailsModel var1, Exception e) {
                 setDetailsLoading(false);
                 if (e == null) {
+                    didFinishLoading = true;
                     Cart cart = var1.getCart();
                     TextView cartName = (TextView) findViewById(R.id.cart_name_details_TV);
                     cartName.setText(cart.getName());
@@ -122,6 +124,7 @@ public class CartDetailsActivity extends AppCompatActivity implements View.OnLon
                         public void done(ParseObject parseObject, ParseException e) {
                             TextView foundBy = (TextView) findViewById(R.id.found_by_TV);
                             foundBy.setText((String) parseObject.get("name"));
+                            ownerID = parseObject.getObjectId();
                             Log.d(TAG, "got user name " + parseObject.get("name"));
                         }
                     });
@@ -157,6 +160,14 @@ public class CartDetailsActivity extends AppCompatActivity implements View.OnLon
                     } else {
                         menuItem.setTitle("Report");
                         ownCart = false;
+                        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem menuItem) {
+                                reportCart();
+                                return true;
+                            }
+                        });
+
                     }
 
                     /**
@@ -167,14 +178,17 @@ public class CartDetailsActivity extends AppCompatActivity implements View.OnLon
                         fullImage.getDataInBackground(new GetDataCallback() {
                             @Override
                             public void done(byte[] imageBytes, ParseException e) {
-                                Glide.with(CartDetailsActivity.this).load(imageBytes).centerCrop().into(imageView);
+                                if (CartDetailsActivity.this != null) {
+                                    Glide.with(CartDetailsActivity.this).load(imageBytes).centerCrop().into(imageView);
+                                }
+
                             }
                         });
                     }
 
 
                 } else {
-                    //TODO. handle error.
+                    Toast.makeText(CartDetailsActivity.this, getResources().getString(R.string.connection_error), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -187,7 +201,7 @@ public class CartDetailsActivity extends AppCompatActivity implements View.OnLon
                     likeBtn.setImageResource(R.mipmap.ic_favorite_pink_24px);
                     liked = true;
                     likePhoto();
-                    changeLikeCount(true);
+
                 } else {
                     likeBtn.setImageResource(R.mipmap.ic_favorite_white_24px);
                     liked = false;
@@ -218,29 +232,57 @@ public class CartDetailsActivity extends AppCompatActivity implements View.OnLon
         return super.onOptionsItemSelected(item);
     }
 
+    public void didClickUserName(View view){
+        if(didFinishLoading){
+            if(ownerID!=null){
+                Intent intent = new Intent(CartDetailsActivity.this,ProfileActivity.class);
+                intent.putExtra(ApplicationConstants.USER_ID_BUNDLE, ownerID);
+                startActivity(intent);
+            }
+        }else{
+            Toast.makeText(this, getResources().getString(R.string.please_wait), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void likePhoto() {
         if (APIManager.getInstance().isUserLoggedIn()) {
-            APIManager.getInstance().likeCart(cartID, userID, new OnComplete<Boolean>() {
-                @Override
-                public void done(Boolean var1, Exception e) {
-                    //done
-                }
-            });
+            if(didFinishLoading) {
+                changeLikeCount(true);
+                APIManager.getInstance().likeCart(cartID, userID, new OnComplete<Boolean>() {
+                    @Override
+                    public void done(Boolean var1, Exception e) {
+                        //done
+                        if (e != null) {
+                            Toast.makeText(CartDetailsActivity.this, getResources().getString(R.string.connection_error), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(CartDetailsActivity.this, getResources().getString(R.string.liked_success), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }else{
+                Toast.makeText(this, getResources().getString(R.string.please_wait), Toast.LENGTH_SHORT).show();
+            }
         } else {
             //TODO. handle anonymous users.
+            Toast.makeText(this, getResources().getString(R.string.please_login), Toast.LENGTH_SHORT).show();
         }
     }
 
     public void dislikePhoto() {
         if (APIManager.getInstance().isUserLoggedIn()) {
-            APIManager.getInstance().dislikeCart(cartID, userID, new OnComplete<Boolean>() {
-                @Override
-                public void done(Boolean var1, Exception e) {
-                    //done
-                }
-            });
+            if(didFinishLoading) {
+                changeLikeCount(false);
+                APIManager.getInstance().dislikeCart(cartID, userID, new OnComplete<Boolean>() {
+                    @Override
+                    public void done(Boolean var1, Exception e) {
+                        //done
+
+                    }
+                });
+            }
         } else {
             //TODO. handle anonymous users.
+            Toast.makeText(this, getResources().getString(R.string.please_wait), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -252,7 +294,6 @@ public class CartDetailsActivity extends AppCompatActivity implements View.OnLon
                     if (e == null) {
                         Toast.makeText(CartDetailsActivity.this, "Deleted you post.", Toast.LENGTH_SHORT).show();
                         finish();
-                        //TODO. deleted cart.
                     }
                 }
             });
@@ -351,6 +392,26 @@ public class CartDetailsActivity extends AppCompatActivity implements View.OnLon
 
     }
 
+    public void reportCart() {
+        if (didFinishLoading) {
+            APIManager.getInstance().reportCart(cartID, new OnComplete<Boolean>() {
+                @Override
+                public void done(Boolean var1, Exception e) {
+                    //done
+                    if (e != null) {
+                        Toast.makeText(CartDetailsActivity.this, getResources().getString(R.string.connection_error), Toast.LENGTH_SHORT).show();
+
+                    } else {
+                        Toast.makeText(CartDetailsActivity.this, getResources().getString(R.string.report_cart), Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                }
+            });
+        } else {
+            Toast.makeText(this, getResources().getString(R.string.please_wait), Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
     @Override
     public boolean onLongClick(View view) {

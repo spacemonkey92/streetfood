@@ -1,0 +1,85 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="30dp"
+    android:layout_width="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:clickable="true"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:id="@+id/login_title"
+        android:layout_gravity="center"
+        android:layout_height="match_parent"
+        android:layout_width="150dp"
+        android:text="Omly Food"
+        android:textSize="26sp" />
+
+    <TextView
+        android:clickable="false"
+        android:id="@+id/login_subhead"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/login_quote"
+        android:textColor="@color/secondaryTextColor"
+        android:textStyle="italic" />
+
+    <TextView
+        android:clickable="false"
+        android:layout_gravity="right"
+        android:layout_height="36dp"
+        android:layout_width="wrap_content"
+        android:text="- Yoda"
+        android:textColor="@color/secondaryTextColor"
+        android:textStyle="italic" />
+
+    <android.support.v7.widget.CardView
+        android:background="@drawable/ripple"
+        android:id="@+id/fb_login_button"
+        android:clickable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        card_view:cardBackgroundColor="@color/primaryColor"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardElevation="2dp">
+        <RelativeLayout
+            android:gravity="center"
+            android:background="@drawable/primary_ripple"
+            android:clickable="false"
+            android:minWidth="@dimen/button_width"
+            android:minHeight="@dimen/button_height"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_gravity="center"
+                android:id="@+id/button_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:paddingLeft="@dimen/m_margin"
+                android:paddingRight="@dimen/m_margin"
+                android:text="Login with Facebook"
+                android:textColor="@color/tabsScrollColor" />
+
+        </RelativeLayout>
+
+
+    </android.support.v7.widget.CardView>
+    <!--<com.facebook.login.widget.LoginButton-->
+        <!--android:gravity="center"-->
+        <!--android:id="@+id/login_button"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_height="90dp"-->
+        <!--android:layout_marginBottom="20dp"-->
+        <!--android:layout_marginTop="20dp"-->
+        <!--android:layout_width="220dp" />-->
+
+</LinearLayout>
+
+
+
+

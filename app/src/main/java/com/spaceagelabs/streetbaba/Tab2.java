@@ -11,21 +11,25 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.melnykov.fab.FloatingActionButton;
 import com.melnykov.fab.ScrollDirectionListener;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.spaceagelabs.streetbaba.UI.DividerItemDecoration;
 import com.spaceagelabs.streetbaba.UI.adapters.CartsAdapter;
 import com.spaceagelabs.streetbaba.UI.viewmodel.CartsViewModel;
 import com.spaceagelabs.streetbaba.clientSDK.APIManager;
 import com.spaceagelabs.streetbaba.clientSDK.OnComplete;
+import com.spaceagelabs.streetbaba.clientSDK.OnTabSwipeListner;
 import com.spaceagelabs.streetbaba.clientSDK.model.Cart;
 import com.spaceagelabs.streetbaba.util.ApplicationConstants;
 import com.spaceagelabs.streetbaba.util.GPSTracker;
@@ -46,17 +50,21 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
     GPSTracker gpsTracker;
     List<CartsViewModel> allCarts;
     OnCartsDataListener mOncarOnCartsDataListener;
+    OnTabSwipeListner mTabSwipeListner;
+    LinearLayoutManager linearLayoutManager; // this is to fix the android null pointer exception.
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
             mOncarOnCartsDataListener = (OnCartsDataListener)activity;
+            mTabSwipeListner = (OnTabSwipeListner)activity;
         }catch (ClassCastException e){
 
         }
 
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -80,6 +88,7 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(TAG, "clicket button");
                 Intent i = new Intent(getActivity(), AddPhotoActivity.class);
                 startActivity(i);
             }
@@ -87,7 +96,9 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
 
         CircularProgressView progressView = (CircularProgressView) v.findViewById(R.id.progress_view);
         progressView.startAnimation();
+        showEmptyList(false);
         homeCardsData();
+
         return v;
     }
 
@@ -109,27 +120,35 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
             gpsTracker = null;
 
         } else {
-            //TODO.
+
             // dialog to turn on GPS owner.
+            gpsTracker.showSettingsAlert();
         }
         APIManager.getInstance().getCarts(lat, lng, new OnComplete<ArrayList<CartsViewModel>>() {
             @Override
             public void done(ArrayList<CartsViewModel> carts, Exception e) {
                 CircularProgressView progressView = (CircularProgressView) mView.findViewById(R.id.progress_view);
                 progressView.setVisibility(View.INVISIBLE);
-                if(e==null){
-                    allCarts= carts;
-                    Log.d(TAG,"got from API manager");
-                    mRVAdapter = new CartsAdapter(getActivity(), carts);
-                    mRVAdapter.setClickListener(Tab2.this);
-                    mRecycler.addItemDecoration(new DividerItemDecoration(getActivity(), R.drawable.line_divider));
-                    mRecycler.setAdapter(mRVAdapter);
-                    mRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
+                if (e == null) {
 
-                    //now send the data to the activity, to mark the map;
-                    if(mOncarOnCartsDataListener!=null){
-                        Log.d(TAG, "data received to Tab 1, sending to activity..");
-                        mOncarOnCartsDataListener.onCartsDataReceived(carts);
+                    if (carts.size() > 0) {
+
+                        allCarts = carts;
+                        Log.d(TAG, "got from API manager");
+                        mRVAdapter = new CartsAdapter(getActivity(), carts);
+                        mRVAdapter.setClickListener(Tab2.this);
+                        mRecycler.addItemDecoration(new DividerItemDecoration(getActivity(), R.drawable.line_divider));
+                        mRecycler.setAdapter(mRVAdapter);
+                        linearLayoutManager = new LinearLayoutManager(getContext());
+                        mRecycler.setLayoutManager(linearLayoutManager);
+
+                        //now send the data to the activity, to mark the map;
+                        if (mOncarOnCartsDataListener != null) {
+                            Log.d(TAG, "data received to Tab 1, sending to activity..");
+                            mOncarOnCartsDataListener.onCartsDataReceived(carts);
+                        }
+                    } else {
+                        showEmptyList(true);
                     }
                 }
             }
@@ -152,11 +171,33 @@ public class Tab2 extends Fragment implements CartsAdapter.RVClickListener {
 
     }
 
+
+
     public interface OnCartsDataListener {
 
         public void onCartsDataReceived(ArrayList<CartsViewModel> cartsViewModels);
 
     }
+
+    public  void showEmptyList(boolean state){
+        if(mView!=null){
+            View emptyView = mView.findViewById(R.id.empty_view);
+            if(state){
+                if(mRecycler!=null){
+                    mRecycler.setVisibility(View.INVISIBLE);
+                }
+                emptyView.setVisibility(View.VISIBLE);
+
+            }else{
+                if(mRecycler!=null){
+                    mRecycler.setVisibility(View.VISIBLE);
+                }
+                emptyView.setVisibility(View.INVISIBLE);
+            }
+        }
+    }
+
+
 
 
 

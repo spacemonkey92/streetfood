@@ -16,7 +16,7 @@ import java.util.ArrayList;
 /**
  * Created by Nitin on 25/7/15.
  */
-public class ViewPagerAdapter extends FragmentStatePagerAdapter implements Tab2.OnCartsDataListener {
+public class ViewPagerAdapter extends FragmentStatePagerAdapter implements Tab2.OnCartsDataListener{
 
 
     CharSequence Titles[]; // This will Store the Titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
@@ -50,7 +50,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter implements Tab2.
 //            this.tab3 = new Tab3();
             return tab3;
         }
-
     }
 
     // This method return the titles for the Tabs in the Tab Strip
@@ -77,4 +76,5 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter implements Tab2.
             Log.d(TAG, "tab3 is null");
         }
     }
+
 }

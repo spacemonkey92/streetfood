@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.spaceagelabs.streetbaba">
+    package="com.spaceagelabs.streetbaba"
+    android:versionCode="6"
+    android:versionName="1.0.13">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
@@ -37,8 +38,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name=".AddCartActivity"
-            android:label="@string/title_activity_add_cart"
-            android:noHistory="true">
+            android:label="@string/title_activity_add_cart">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -56,6 +56,15 @@
         <activity
             android:name=".ProfileActivity"
             android:label="@string/title_activity_profile"
+            android:theme="@style/AppTheme"></activity>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="" />
+
+        <activity
+            android:name=".LeaderBoardActivity"
+            android:label="@string/title_activity_leader_board"
             android:theme="@style/AppTheme"></activity>
     </application>
 

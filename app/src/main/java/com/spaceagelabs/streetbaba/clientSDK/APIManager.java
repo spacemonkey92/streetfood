@@ -1,6 +1,8 @@
 package com.spaceagelabs.streetbaba.clientSDK;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -30,6 +32,8 @@ import com.spaceagelabs.streetbaba.util.GPSTracker;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.net.URL;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +69,9 @@ public class APIManager {
                 if (e == null) {
                     if (carts != null) {
                         for (Cart cart : carts) {
+                            /**
+                             * Building CartViewModel from Cart and send it to the caller.
+                             */
                             int likes = cart.getLikesCount();
                             String rating;
                             if (likes == 1) {
@@ -77,11 +84,94 @@ public class APIManager {
                             allCarts.add(mCart);
                         }
                     }
+                    onComplete.done(allCarts, null);
                 } else {
                     Log.d(TAG, "error " + e.getMessage());
                     onComplete.done(null, e);
                 }
-                onComplete.done(allCarts, null);
+            }
+        });
+    }
+
+    public void getCartsByUser(final String userId, final OnComplete<ArrayList<CartsViewModel>> onComplete) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("version", API_VERSION);
+        params.put("userId", userId);
+
+        final ArrayList<CartsViewModel> allCarts = new ArrayList<>();
+        ParseCloud.callFunctionInBackground("getCartsByUser", params, new FunctionCallback<List<Cart>>() {
+
+            @Override
+            public void done(List<Cart> carts, com.parse.ParseException e) {
+                if (e == null) {
+                    if (carts != null) {
+                        for (Cart cart : carts) {
+                            /**
+                             * Building CartViewModel from Cart and send it to the caller.
+                             */
+                            int likes = cart.getLikesCount();
+                            String rating;
+                            if (likes == 1) {
+                                rating = "" + String.valueOf(likes) + " Like";
+                            } else {
+                                rating = "" + String.valueOf(likes) + " Likes";
+                            }
+
+                            final CartsViewModel mCart = new CartsViewModel(cart.getObjectId(), cart.getName(), cart.getAddress(), String.valueOf(cart.getReviewCount()), rating, cart.getImage(), cart.getLocation());
+                            allCarts.add(mCart);
+                        }
+                    }
+                    onComplete.done(allCarts, null);
+                } else {
+                    Log.d(TAG, "error " + e.getMessage());
+                    onComplete.done(null, e);
+                }
+
+            }
+        });
+    }
+
+
+    public void getLikedCartsByUser(final String userId, final OnComplete<ArrayList<CartsViewModel>> onComplete) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("version", API_VERSION);
+        params.put("userId", userId);
+
+        final ArrayList<CartsViewModel> allCarts = new ArrayList<>();
+        ParseCloud.callFunctionInBackground("getLikedCartsByUser", params, new FunctionCallback<List<Cart>>() {
+
+            @Override
+            public void done(List<Cart> carts, com.parse.ParseException e) {
+                if (e == null) {
+                    if (carts != null) {
+                        for (Cart cart : carts) {
+                            /**
+                             * Building CartViewModel from Cart and send it to the caller.
+                             */
+                            try {
+                                cart.fetchIfNeeded();
+                                int likes = cart.getLikesCount();
+                                String rating;
+                                if (likes == 1) {
+                                    rating = "" + String.valueOf(likes) + " Like";
+                                } else {
+                                    rating = "" + String.valueOf(likes) + " Likes";
+                                }
+
+                                final CartsViewModel mCart = new CartsViewModel(cart.getObjectId(), cart.getName(), cart.getAddress(), String.valueOf(cart.getReviewCount()), rating, cart.getImage(), cart.getLocation());
+                                allCarts.add(mCart);
+                            } catch (ParseException e1) {
+                                onComplete.done(null, e);
+                            }
+
+                        }
+                    }
+                    onComplete.done(allCarts, null);
+                } else {
+                    Log.d(TAG, "error " + e.getMessage());
+                    onComplete.done(null, e);
+                }
+
             }
         });
     }
@@ -236,18 +326,43 @@ public class APIManager {
         });
     }
 
-    public void saveFBUserInParse(final OnComplete<String> onComplete) {
+    public void reportCart(String cartId, final OnComplete<Boolean> onComplete) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("version", API_VERSION);
+        params.put("cartId", cartId);
+        ParseCloud.callFunctionInBackground("reportCart", params, new FunctionCallback<String>() {
+            @Override
+            public void done(String aBoolean, ParseException e) {
+                if (e == null) {
+                    Log.d(TAG, "awesome , Liked it!");
+                    onComplete.done(true, null);
+                } else {
+                    Log.d(TAG, "oops !" + e.getMessage());
+                }
+            }
+        });
+    }
 
+
+    /**
+     * User resources.
+     */
+    public void saveFBUserInParse(final OnComplete<String> onComplete) {
+        Log.d(TAG, "fb user saving!!");
         GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
+
+                        Log.d(TAG, "got json fb");
                         Log.d(TAG, jsonObject.toString());
                         if (jsonObject != null) {
                             JSONObject userProfile = new JSONObject();
 
                             try {
-                                userProfile.put("facebookId", jsonObject.getLong("id"));
+                                final String facebookId = jsonObject.getString("id");
+                                Log.d(TAG, "face book id is: " + facebookId);
+                                userProfile.put("facebookId", facebookId);
                                 userProfile.put("name", jsonObject.getString("name"));
 
                                 if (jsonObject.getString("gender") != null)
@@ -265,7 +380,7 @@ public class APIManager {
                                     @Override
                                     public void done(ParseException e) {
                                         if (e == null) {
-
+                                            saveProfilePicAndProceed(facebookId);
                                             onComplete.done("okay", null);
                                         }
                                     }
@@ -317,7 +432,7 @@ public class APIManager {
         }
     }
 
-    public void submitCart(final Cart cart, final ParseFile parseImage,final ParseFile largeParseImage, final OnComplete<String> onComplete) {
+    public void submitCart(final Cart cart, final ParseFile parseImage, final ParseFile largeParseImage, final OnComplete<String> onComplete) {
 
         parseImage.saveInBackground(new SaveCallback() {
             @Override
@@ -357,6 +472,61 @@ public class APIManager {
             }
         });
 
+    }
+
+    public void saveProfilePicAndProceed(final String userID) {
+//        CircularProgressView progressView = (CircularProgressView) findViewById(R.id.progress_view); 
+//        progressView.setVisibility(View.INVISIBLE);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    URL imageURL = new URL("https://graph.facebook.com/" + userID + "/picture?type=large");
+                    final Bitmap bitmap = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
+
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] byteArray = stream.toByteArray();
+
+                    final ParseFile photoFile = new ParseFile(userID + ".jpg", byteArray);
+                    photoFile.saveInBackground(new SaveCallback() {
+
+                        public void done(ParseException e) {
+                            if (e != null) {
+
+                                Log.d(TAG, "parse file saving error");
+                            } else {
+                                ParseUser currentUser = ParseUser.getCurrentUser();
+                                currentUser.put("profileImage", photoFile);
+                                currentUser.saveInBackground();
+
+                            }
+                        }
+                    });
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public void getTopUsers(final OnComplete<List<ParseUser>> onComplete) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("version", API_VERSION);
+        ParseCloud.callFunctionInBackground("getTopUsers", params, new FunctionCallback<List<ParseUser>>() {
+
+            @Override
+            public void done(List<ParseUser> parseUsers, com.parse.ParseException e) {
+                if (e == null) {
+                    onComplete.done(parseUsers, null);
+                } else {
+                    Log.d(TAG, "error " + e.getMessage());
+                    onComplete.done(null, e);
+                }
+            }
+        });
     }
 
 }

@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 
 import com.facebook.login.widget.LoginButton;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -52,7 +53,7 @@ import java.util.List;
 
 public class AddCartActivity extends AppCompatActivity implements  GoogleApiClient.OnConnectionFailedListener {
 
-    LoginButton loginButton;
+    CardView loginButton;
     private static final String TAG = "AddCartActivity";
     private SlidingUpPanelLayout mLayout;
     protected GoogleApiClient mGoogleApiClient;
@@ -92,6 +93,7 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         }
         mAdapter = new PlaceAutocompleteAdapter(this, mGoogleApiClient, bounds, null);
         mAutocompleteView.setAdapter(mAdapter);
+        showLoading(false);
         setupImage();
         setupButton();
     }
@@ -105,7 +107,7 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
     }
 
     public void setupBottomSheet(){
-        loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton = (CardView) findViewById(R.id.fb_login_button);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -148,9 +150,8 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        if (mLayout != null &&
-                (mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED || mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED)) {
+//        super.onBackPressed();
+        if (mLayout != null && (mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED || mLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED)) {
             mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         } else {
             finish();
@@ -199,13 +200,16 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         options.inSampleSize = scale;
         options.inJustDecodeBounds = false;
         bm = BitmapFactory.decodeFile(selectedImagePath, options);
-        image.setImageBitmap(bm);
-
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 90, stream);
-        byte[] byteArray = stream.toByteArray();
-
-        parseImage = new ParseFile("omly.jpg", byteArray);
+        if(bm!=null){
+            image.setImageBitmap(bm);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.JPEG, 90, stream);
+            byte[] byteArray = stream.toByteArray();
+            parseImage = new ParseFile("omly.jpg", byteArray);
+        }else{
+            Toast.makeText(this, getResources().getString(R.string.get_picture_error), Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         /**
          * load large image
@@ -224,11 +228,17 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         largeOptions.inJustDecodeBounds = false;
         largeBit = BitmapFactory.decodeFile(selectedImagePath, largeOptions);
 
-        ByteArrayOutputStream largeStream = new ByteArrayOutputStream();
-        largeBit.compress(Bitmap.CompressFormat.JPEG, 80, largeStream);
-        byte[] largeByteArray = largeStream.toByteArray();
+        if(largeBit!=null){
+            ByteArrayOutputStream largeStream = new ByteArrayOutputStream();
+            largeBit.compress(Bitmap.CompressFormat.JPEG, 80, largeStream);
+            byte[] largeByteArray = largeStream.toByteArray();
+            largeParseImage = new ParseFile("omly.jpg", largeByteArray);
+        }else{
+            Toast.makeText(this, getResources().getString(R.string.get_picture_error), Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        largeParseImage = new ParseFile("omly.jpg", largeByteArray);
+
 
 
         /** try to get lat long **/
@@ -297,7 +307,7 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         String name = nameET.getText().toString();
         AppCompatEditText aboutET = (AppCompatEditText) findViewById(R.id.cart_des_ET);
         String about = aboutET.getText().toString();
-        if(parseImage!=null && largeParseImage!=null && fullAddress != null && name != null && geoPoint!=null && address != null && about!=null){
+        if(parseImage!=null && largeParseImage!=null && fullAddress != null && name != null && name.length()>0 && geoPoint!=null && address != null && about!=null && about.length()>0){
 
             cart = new Cart();
             cart.setAddress(address);
@@ -306,9 +316,11 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
             cart.setLocation(geoPoint);
             cart.setCreatedBy(ParseUser.getCurrentUser());
             cart.setAbout(about);
+            showLoading(true);
             APIManager.getInstance().submitCart(cart, parseImage,largeParseImage, new OnComplete<String>() {
                 @Override
                 public void done(String cartId, Exception e) {
+                    showLoading(false);
                     if(e==null){
                         Log.d(TAG,"success");
                         navigateToNextScreen(cartId);
@@ -332,6 +344,7 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
             i.putExtra(ApplicationConstants.CART_IMG_BUNDLE, bm);
             i.putExtra(ApplicationConstants.CART_ID_BUNDLE,cartID);
         }
+        finish();
         startActivity(i);
     }
 
@@ -411,18 +424,31 @@ public class AddCartActivity extends AppCompatActivity implements  GoogleApiClie
         ParseFacebookUtils.logInWithReadPermissionsInBackground(this, permissions, new LogInCallback() {
             @Override
             public void done(ParseUser user, com.parse.ParseException e) {
-                if(user!=null && e==null){
+                if (user != null && e == null) {
                     APIManager.getInstance().saveFBUserInParse(new OnComplete<String>() {
                         @Override
                         public void done(String var1, Exception e) {
-                            if(e==null){
+                            if (e == null){
                                 Log.d(TAG, "saved profile finally !");
                                 mLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+                                submitCart();
                             }
                         }
                     });
                 }
             }
         });
+    }
+
+    public  void showLoading(boolean state){
+        View postButton = findViewById(R.id.post_button);
+        CircularProgressView progressView = (CircularProgressView) findViewById(R.id.progress_view);
+        if(state){
+            postButton.setVisibility(View.INVISIBLE);
+            progressView.setVisibility(View.VISIBLE);
+        }else{
+            postButton.setVisibility(View.VISIBLE);
+            progressView.setVisibility(View.INVISIBLE);
+        }
     }
 }
